@@ -187,7 +187,7 @@
                             <!-- Tab 2: Dream Team Solver -->
                             <div class="tab-pane fade" id="dreamteam" role="tabpanel" aria-labelledby="dreamteam-tab">
                                 <h5 class="card-title"><i class="fas fa-trophy text-warning"></i> Absolute Dream Team Solver</h5>
-                                <p class="text-muted small">Finds the mathematically optimal squad of 8 riders that yields the highest total points under the 120-credit limit and all category constraints (Leaders <= 3, Climbers <= 3, Sprinters <= 3, All-rounders <= 5, and max 3 per team).</p>
+                                <p id="dreamTeamDesc" class="text-muted small">Finds the mathematically optimal squad of 8 riders that yields the highest total points under the 120-credit limit and all category constraints (Leaders <= 3, Climbers <= 3, Sprinters <= 3, All-rounders <= 5, and max 3 per team).</p>
                                 
                                 <div class="text-center my-3">
                                     <button class="btn btn-success px-4 py-2 fw-bold text-white shadow-sm" onclick="runDreamTeamSolver()">
@@ -309,6 +309,7 @@
             
             // Sync with Team Builder storage initially
             loadFromTeamBuilder();
+            updateRuleDescriptions();
             
             // Set up Autocomplete search
             initSearchAutocomplete();
@@ -322,6 +323,14 @@
                 console.error("Error loading stages data:", e);
             }
         });
+
+        function updateRuleDescriptions() {
+            const rules = getRaceRules();
+            const desc = document.getElementById('dreamTeamDesc');
+            if (desc) {
+                desc.textContent = `Finds the mathematically optimal squad of ${rules.maxRiders} riders that yields the highest total points under the ${rules.maxBudget}-credit limit and all category constraints (Leaders <= ${rules.categoryLimits['Leaders']}, Climbers <= ${rules.categoryLimits['Climbers']}, Sprinters <= ${rules.categoryLimits['Sprinters']}, All-rounders <= ${rules.categoryLimits['All-rounders']}, and max ${rules.maxPerTeam} per team).`;
+            }
+        }
 
         // Load active team from localStorage
         function loadFromTeamBuilder() {
@@ -631,7 +640,7 @@
                         </div>
                         <div class="text-end">
                             <div class="h4 mb-0 fw-bold font-monospace">${Math.round(totalPoints).toLocaleString()} pts</div>
-                            <small class="text-white-50 font-monospace">${totalCost} / 120 Credits</small>
+                            <small class="text-white-50 font-monospace">${totalCost} / ${rules.maxBudget} Credits</small>
                         </div>
                     </div>
                     

@@ -202,23 +202,31 @@ def scrape_femmes_riders():
                     pcs_points_12m = 150 + (hash(raw_name) % 300)
                     pcs_points_season = int(pcs_points_12m * 0.7)
                     
-                # Realistic pricing based on PCS rank
+                # Realistic pricing based on PCS rank matching official TdF Femmes Fantasy budget
                 if pcs_rank == 1:
-                    price = 25
+                    price = 22
                 elif pcs_rank == 2:
-                    price = 24
+                    price = 20
+                elif pcs_rank == 3:
+                    price = 19
                 elif pcs_rank <= 5:
-                    price = 21 + (5 - pcs_rank)
-                elif pcs_rank <= 15:
-                    price = 17 + ((15 - pcs_rank) // 3)
-                elif pcs_rank <= 30:
-                    price = 14 + ((30 - pcs_rank) // 5)
-                elif pcs_rank <= 60:
-                    price = 11 + ((60 - pcs_rank) // 10)
-                elif pcs_rank <= 100:
-                    price = 8 + ((100 - pcs_rank) // 15)
-                else:
+                    price = 18
+                elif pcs_rank <= 8:
+                    price = 16
+                elif pcs_rank <= 12:
+                    price = 14
+                elif pcs_rank <= 18:
+                    price = 12
+                elif pcs_rank <= 25:
+                    price = 10
+                elif pcs_rank <= 35:
+                    price = 9
+                elif pcs_rank <= 50:
+                    price = 7
+                elif pcs_rank <= 75:
                     price = 6
+                else:
+                    price = 5
                     
                 # Determine category
                 category = "All-rounders"
