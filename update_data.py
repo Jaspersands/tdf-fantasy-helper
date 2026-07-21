@@ -309,7 +309,8 @@ def main():
             except Exception:
                 pass
         
-        merged_data = {**existing_data, **updated_data}
+        import time
+        merged_data = {**existing_data, **updated_data, "updated_at": time.strftime("%B %d, %Y at %I:%M %p")}
         
         try:
             with open(output_path, "w", encoding="utf-8") as f:

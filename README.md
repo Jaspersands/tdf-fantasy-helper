@@ -11,47 +11,23 @@ A high-performance, premium client-side recreation of the Tour de France Fantasy
 
 ---
 
-## Getting Started
+## Getting Started & Automatic Updates
 
-### 1. Launching the App
-The app is built using HTML, CSS, and Vanilla JavaScript. You can open any `.html` file (e.g. `index.html`) directly in a web browser, but it is highly recommended to run a simple local web server to enable smooth local storage and assets handling:
+The app includes a local server (`server.py`) that serves the website and **automatically updates the riders and stages databases** in the background when you visit the site (rate-limited to once every 15 minutes to prevent spamming).
 
 1. Open your terminal.
-2. Navigate to this directory:
+2. Start the local server:
    ```bash
-   cd "/Users/jaspersands/Desktop/tdf fantasy"
+   python3 "/Users/jaspersands/Desktop/tdf fantasy/server.py"
    ```
-3. Start a built-in Python web server:
-   ```bash
-   python3 -m http.server 8000
-   ```
-4. Open [http://localhost:8000](http://localhost:8000) in your web browser.
+3. Open **[http://localhost:8005](http://localhost:8005)** in your web browser.
 
----
+No manual updates or cron jobs are necessary! Whenever you open the site, it will check if the database is older than 15 minutes and fetch the latest stage classifications, points, and withdrawals automatically in the background.
 
-## Daily Data Updates
-
-During the Tour de France, statistics and rider points change daily after each stage. To keep your local website fully updated, a scraper script `update_data.py` is included.
-
-### 1. Manual Update
-To pull the latest points and ranks immediately:
+## Manual Database Updates
+If you ever want to force a database refresh manually:
 ```bash
 python3 "/Users/jaspersands/Desktop/tdf fantasy/update_data.py"
 ```
-This script downloads the updated values and rewrites `riders_data.json` in place. Refresh your browser to see the latest stats.
+This will rebuild `riders_data.json` and `stages_data.json` immediately.
 
-### 2. Automatic Daily Updates (macOS Cron)
-You can automate this update to run every evening (e.g., at 6:00 PM when TdF stages typically finish) using the macOS built-in cron scheduler:
-
-1. Open Terminal.
-2. Open the crontab editor by running:
-   ```bash
-   crontab -e
-   ```
-3. Press `i` to enter insert mode in vi/vim.
-4. Copy and paste the following line (make sure the path to Python and your project folder is correct):
-   ```cron
-   0 18 * * * /usr/bin/python3 "/Users/jaspersands/Desktop/tdf fantasy/update_data.py" > /tmp/tdf_update.log 2>&1
-   ```
-5. Press `Esc` and type `:wq` then press `Enter` to save and exit.
-6. The script will now run automatically in the background at 18:00 (6:00 PM) every single day, keeping your fantasy helper updated throughout the tour.

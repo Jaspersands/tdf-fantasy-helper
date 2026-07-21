@@ -80,6 +80,13 @@ async function initApp() {
         const data = await response.json();
         APP_STATE.riders = data[APP_STATE.currentRace] || [];
         console.log(`Loaded ${APP_STATE.riders.length} riders for race ${APP_STATE.currentRace}`);
+        
+        if (data.updated_at) {
+            const footerDate = document.getElementById('lastUpdatedDate');
+            if (footerDate) {
+                footerDate.textContent = `Last data update: ${data.updated_at}`;
+            }
+        }
     } catch (e) {
         console.error('Error loading riders database:', e);
     }
