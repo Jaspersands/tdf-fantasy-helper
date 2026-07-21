@@ -127,6 +127,262 @@
       "type": "Flat stage"
     }
   ],
+  "tdf2025": [
+    {
+      "stage": "1",
+      "course": "Lilleto Lille",
+      "distance": "184.9km (114.9mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "2",
+      "course": "Lauwin-PlanquetoBoulogne-sur-Mer",
+      "distance": "209.1km (129.9mi)",
+      "type": "Hilly stage"
+    },
+    {
+      "stage": "3",
+      "course": "ValenciennestoDunkirk",
+      "distance": "178.3km (110.8mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "4",
+      "course": "AmienstoRouen",
+      "distance": "174.2km (108.2mi)",
+      "type": "Hilly stage"
+    },
+    {
+      "stage": "5",
+      "course": "Caento Caen",
+      "distance": "33km (21mi)",
+      "type": "Individual time trial"
+    },
+    {
+      "stage": "6",
+      "course": "BayeuxtoVire Normandie",
+      "distance": "201.5km (125.2mi)",
+      "type": "Hilly stage"
+    },
+    {
+      "stage": "7",
+      "course": "Saint-MalotoGuerlédan(Mûr-de-Bretagne)",
+      "distance": "197km (122mi)",
+      "type": "Hilly stage"
+    },
+    {
+      "stage": "8",
+      "course": "Saint-Méen-le-GrandtoLaval",
+      "distance": "171.4km (106.5mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "9",
+      "course": "ChinontoChâteauroux",
+      "distance": "174.1km (108.2mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "10",
+      "course": "EnnezattoMont-Dore(Puy de Sancy)",
+      "distance": "165.3km (102.7mi)",
+      "type": "Mountain stage"
+    },
+    {
+      "stage": "11",
+      "course": "Toulouse to Toulouse",
+      "distance": "156.8km (97.4mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "12",
+      "course": "AuchtoHautacam",
+      "distance": "180.6km (112.2mi)",
+      "type": "Mountain stage"
+    },
+    {
+      "stage": "13",
+      "course": "LoudenvielletoPeyragudes",
+      "distance": "10.9km (6.8mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "14",
+      "course": "PautoSuperbagnères",
+      "distance": "182.6km (113.5mi)",
+      "type": "Mountain stage"
+    },
+    {
+      "stage": "15",
+      "course": "MurettoCarcassonne",
+      "distance": "169.3km (105.2mi)",
+      "type": "Hilly stage"
+    },
+    {
+      "stage": "16",
+      "course": "Montpellier toMont Ventoux",
+      "distance": "171.5km (106.6mi)",
+      "type": "Mountain stage"
+    },
+    {
+      "stage": "17",
+      "course": "BollènetoValence",
+      "distance": "160.4km (99.7mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "18",
+      "course": "ViftoCourchevel(Col de la Loze)",
+      "distance": "171.5km (106.6mi)",
+      "type": "Mountain stage"
+    },
+    {
+      "stage": "19",
+      "course": "AlbertvilletoLa Plagne",
+      "distance": "93.1km (57.8mi)",
+      "type": "Mountain stage"
+    },
+    {
+      "stage": "20",
+      "course": "NantuatoPontarlier",
+      "distance": "184.2km (114.5mi)",
+      "type": "Hilly stage"
+    },
+    {
+      "stage": "21",
+      "course": "Mantes-la-VilletoParis(Champs-Élysées)",
+      "distance": "132.3km (82.2mi)",
+      "type": "Flat stage"
+    }
+  ],
+  "vuelta": [
+    {
+      "stage": "1",
+      "course": "Turin(Reggia di Venaria) (Italy) toNovara(Italy)",
+      "distance": "186.1km (115.6mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "2",
+      "course": "Alba(Italy) toLimone Piemonte(Italy)",
+      "distance": "159.6km (99.2mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "3",
+      "course": "San Maurizio Canavese(Italy) toCeres(Italy)",
+      "distance": "134.6km (83.6mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "4",
+      "course": "Susa(Italy) toVoiron(France)",
+      "distance": "206.7km (128.4mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "5",
+      "course": "Figueresto Figueres",
+      "distance": "UAE Team Emirates XRG(UAE)",
+      "type": "Team time trial"
+    },
+    {
+      "stage": "6",
+      "course": "OlottoPal(Andorra)",
+      "distance": "170.3km (105.8mi)",
+      "type": "Mountain stage"
+    },
+    {
+      "stage": "7",
+      "course": "Andorra la Vella(Andorra) toCerler(Huesca La Magia)",
+      "distance": "188km (117mi)",
+      "type": "Mountain stage"
+    },
+    {
+      "stage": "8",
+      "course": "Monzón(Templario) toZaragoza",
+      "distance": "163.5km (101.6mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "9",
+      "course": "AlfarotoValdezcaray",
+      "distance": "195.5km (121.5mi)",
+      "type": "Hilly stage"
+    },
+    {
+      "stage": "10",
+      "course": "Arguedasto El Ferial Larra Belagua",
+      "distance": "175.3km (108.9mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "11",
+      "course": "Bilbaoto Bilbao",
+      "distance": "157.4km (97.8mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "12",
+      "course": "LaredotoLos Corrales de Buelna",
+      "distance": "144.9km (90.0mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "13",
+      "course": "Cabezón de la SaltoL'Angliru",
+      "distance": "202.7km (126.0mi)",
+      "type": "Mountain stage"
+    },
+    {
+      "stage": "14",
+      "course": "AviléstoAlto de La Farrapona",
+      "distance": "135.9km (84.4mi)",
+      "type": "Mountain stage"
+    },
+    {
+      "stage": "15",
+      "course": "VegadeotoMonforte de Lemos",
+      "distance": "167.8km (104.3mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "16",
+      "course": "PoiotoMos(Castro de Herville)",
+      "distance": "167.9km (104.3mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "17",
+      "course": "O Barco de ValdeorrastoPonferrada(Alto de El Morredero)",
+      "distance": "143.2km (89.0mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "18",
+      "course": "Valladolidto Valladolid",
+      "distance": "12.2km (7.6mi)",
+      "type": "Individual time trial"
+    },
+    {
+      "stage": "19",
+      "course": "RuedatoGuijuelo",
+      "distance": "161.9km (100.6mi)",
+      "type": "Flat stage"
+    },
+    {
+      "stage": "20",
+      "course": "Robledo de ChavelatoBola del Mundo",
+      "distance": "165.6km (102.9mi)",
+      "type": "Mountain stage"
+    },
+    {
+      "stage": "21",
+      "course": "Valdeolmos-AlalpardotoMadrid",
+      "distance": "103.6km (64.4mi)",
+      "type": "Flat stage"
+    }
+  ],
   "tdffemmes": [
     {
       "stage": "1",
