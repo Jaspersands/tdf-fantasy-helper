@@ -41,6 +41,7 @@
                             <li><a class="dropdown-item race-option" data-race="tdf" href="#">🇫🇷 Tour de France 2026</a></li>
                             <li><a class="dropdown-item race-option" data-race="tdf2025" href="#">🇫🇷 Tour de France 2025</a></li>
                             <li><a class="dropdown-item race-option" data-race="vuelta" href="#">🇪🇸 Vuelta 2025</a></li>
+                            <li><a class="dropdown-item race-option" data-race="tdffemmes" href="#">🇫🇷👧 Tour de France Femmes</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -152,13 +153,56 @@
                     </div>
                 </div>
 
-                <div class="mt-3 text-center d-flex justify-content-center gap-2">
+                <div class="mt-3 text-center d-flex justify-content-center align-items-center gap-2 flex-wrap">
                     <button class="btn btn-outline-danger" onclick="clearTeam()">
                         <i class="fas fa-trash-alt"></i> Clear Team
                     </button>
-                    <button class="btn btn-success" onclick="exportTeamAsImage()">
-                        <i class="fas fa-image"></i> Export Team Image
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#rivalModal">
+                        <i class="fas fa-balance-scale"></i> Compare vs Rival Squad
                     </button>
+                    <div class="d-flex align-items-center gap-1">
+                        <select id="exportThemeSelect" class="form-select form-select-sm bg-dark text-white border-secondary" style="width: auto;">
+                            <option value="jaune" selected>🏆 Yellow Jersey Theme</option>
+                            <option value="vert">🟢 Green Sprint Theme</option>
+                            <option value="night">🌙 Champs-Élysées Night</option>
+                        </select>
+                        <button class="btn btn-success" onclick="exportTeamAsImage()">
+                            <i class="fas fa-image"></i> Export Team Image
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rival Squad Comparison Modal -->
+        <div class="modal fade" id="rivalModal" tabindex="-1" aria-labelledby="rivalModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content bg-white text-dark">
+                    <div class="modal-header bg-dark text-white">
+                        <h5 class="modal-title" id="rivalModalLabel"><i class="fas fa-balance-scale text-warning"></i> Rival Squad Differential Analyzer</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-3">
+                        <p class="text-secondary small">Type or select 8 riders from your league competitor's team to analyze squad overlap and differential points.</p>
+                        
+                        <div class="mb-3 position-relative">
+                            <label class="form-label fw-bold small">Search & Add Rival Riders</label>
+                            <input type="text" id="rivalSearchInput" class="form-control" placeholder="Search rider name to add to rival team...">
+                            <div id="rivalAutocompleteList" class="dropdown-menu w-100 shadow" style="display:none; max-height:200px; overflow-y:auto;"></div>
+                        </div>
+
+                        <div id="rivalSquadSlots" class="row g-2 mb-3">
+                            <!-- Populated dynamically -->
+                        </div>
+
+                        <button class="btn btn-primary w-100 fw-bold" onclick="analyzeRivalSquad()">
+                            <i class="fas fa-calculator"></i> Compare Head-to-Head
+                        </button>
+
+                        <div id="rivalAnalysisResults" class="mt-3">
+                            <!-- Results -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -672,6 +716,8 @@
                 return;
             }
 
+            const theme = document.getElementById('exportThemeSelect')?.value || 'jaune';
+
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
 
@@ -682,19 +728,38 @@
             canvas.width = 680;
             canvas.height = headerHeight + (currentSquad.length * riderHeight) + footerHeight;
 
-            // Draw Background (Dark Charcoal)
-            ctx.fillStyle = '#0a0a0a';
+            // Theme colors
+            let bgColor = '#0a0a0a';
+            let gradColor1 = '#ffdd00';
+            let gradColor2 = '#ffffff';
+            let titleColor = '#ffffff';
+            let accentColor = '#ffdd00';
+
+            if (theme === 'vert') {
+                bgColor = '#041f10';
+                gradColor1 = '#00e676';
+                gradColor2 = '#a7ffeb';
+                accentColor = '#00e676';
+            } else if (theme === 'night') {
+                bgColor = '#12121e';
+                gradColor1 = '#ff9800';
+                gradColor2 = '#ffeb3b';
+                accentColor = '#ffeb3b';
+            }
+
+            // Draw Background
+            ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw Header Accent Bar (TdF Yellow to White)
+            // Draw Header Accent Bar
             const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
-            grad.addColorStop(0, '#ffdd00');
-            grad.addColorStop(1, '#ffffff');
+            grad.addColorStop(0, gradColor1);
+            grad.addColorStop(1, gradColor2);
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, canvas.width, 5);
 
             // Title
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = titleColor;
             ctx.font = 'bold 22px Outfit, Arial';
             ctx.textAlign = 'center';
             ctx.fillText(`Tour de France Fantasy Helper - Squad`, canvas.width / 2, 40);
@@ -708,7 +773,7 @@
             const totalCost = currentSquad.reduce((sum, r) => sum + r.price, 0);
             const totalPoints = currentSquad.reduce((sum, r) => sum + r.pcs_points_season, 0);
             
-            ctx.fillStyle = '#ffdd00';
+            ctx.fillStyle = accentColor;
             ctx.font = 'bold 15px Outfit, Arial';
             ctx.fillText(`${currentSquad.length}/8 Riders  •  ${totalCost}/120 Credits  •  ${Math.round(totalPoints).toLocaleString()} pts`, canvas.width / 2, 90);
 
@@ -787,6 +852,161 @@
                 URL.revokeObjectURL(url);
             }, 'image/png');
         }
+
+        // Rival Squad Differential Analyzer logic
+        let rivalSquad = [];
+
+        function renderRivalSquadSlots() {
+            const container = document.getElementById('rivalSquadSlots');
+            if (!container) return;
+
+            let html = '';
+            for (let i = 0; i < 8; i++) {
+                const r = rivalSquad[i];
+                if (r) {
+                    html += `
+                        <div class="col-6 col-md-3">
+                            <div class="p-2 border rounded bg-light d-flex justify-content-between align-items-center">
+                                <div class="text-truncate">
+                                    <div class="fw-bold small text-truncate">${r.flag} ${r.name}</div>
+                                    <small class="text-secondary font-monospace" style="font-size:0.7rem">${r.price}⭐ • ${r.pcs_points_season} pts</small>
+                                </div>
+                                <button class="btn btn-xs btn-link text-danger p-0 ms-1" onclick="removeRivalRider(${i})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="col-6 col-md-3">
+                            <div class="p-2 border border-dashed rounded text-center text-muted small" style="min-height:52px">
+                                Empty Slot ${i + 1}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            container.innerHTML = html;
+        }
+
+        function removeRivalRider(idx) {
+            rivalSquad.splice(idx, 1);
+            renderRivalSquadSlots();
+        }
+
+        function initRivalSearchAutocomplete() {
+            const input = document.getElementById('rivalSearchInput');
+            const list = document.getElementById('rivalAutocompleteList');
+            if (!input || !list) return;
+
+            input.addEventListener('input', () => {
+                const val = input.value.trim().toLowerCase();
+                if (!val) {
+                    list.style.display = 'none';
+                    return;
+                }
+                const matches = APP_STATE.riders.filter(r => r.name.toLowerCase().includes(val)).slice(0, 8);
+                if (matches.length === 0) {
+                    list.innerHTML = `<div class="dropdown-item text-muted disabled">No riders found</div>`;
+                } else {
+                    list.innerHTML = matches.map(r => `
+                        <div class="dropdown-item d-flex justify-content-between align-items-center cursor-pointer" onclick='addRiderToRival(${JSON.stringify(r).replace(/'/g, "&#39;")})'>
+                            <span>${r.flag} ${r.name} (${r.team})</span>
+                            <span class="badge bg-secondary">${r.price}⭐</span>
+                        </div>
+                    `).join('');
+                }
+                list.style.display = 'block';
+            });
+        }
+
+        function addRiderToRival(rider) {
+            if (rivalSquad.length >= 8) {
+                alert('Rival squad already has 8 riders!');
+                return;
+            }
+            if (rivalSquad.some(r => r.name === rider.name)) {
+                alert('Rider already in rival squad!');
+                return;
+            }
+            rivalSquad.push(rider);
+            renderRivalSquadSlots();
+            document.getElementById('rivalSearchInput').value = '';
+            document.getElementById('rivalAutocompleteList').style.display = 'none';
+        }
+
+        function analyzeRivalSquad() {
+            const resultsDiv = document.getElementById('rivalAnalysisResults');
+            if (!resultsDiv) return;
+
+            if (currentSquad.length === 0) {
+                resultsDiv.innerHTML = `<div class="alert alert-warning">Please build your own 8-rider team first!</div>`;
+                return;
+            }
+            if (rivalSquad.length === 0) {
+                resultsDiv.innerHTML = `<div class="alert alert-warning">Please add at least 1 rider to rival squad!</div>`;
+                return;
+            }
+
+            const myNames = new Set(currentSquad.map(r => r.name));
+            const rivalNames = new Set(rivalSquad.map(r => r.name));
+
+            const shared = currentSquad.filter(r => rivalNames.has(r.name));
+            const myDifferentials = currentSquad.filter(r => !rivalNames.has(r.name));
+            const rivalDifferentials = rivalSquad.filter(r => !myNames.has(r.name));
+
+            const overlapPct = Math.round((shared.length / Math.max(currentSquad.length, rivalSquad.length)) * 100);
+
+            const myDiffPoints = myDifferentials.reduce((sum, r) => sum + r.pcs_points_season, 0);
+            const rivalDiffPoints = rivalDifferentials.reduce((sum, r) => sum + r.pcs_points_season, 0);
+
+            resultsDiv.innerHTML = `
+                <div class="card p-3 bg-light border-secondary">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0 fw-bold text-dark"><i class="fas fa-balance-scale text-primary"></i> Head-to-Head Analysis</h6>
+                        <span class="badge bg-primary fs-6">${overlapPct}% Squad Overlap</span>
+                    </div>
+
+                    <div class="row g-2 text-center mb-3">
+                        <div class="col-6">
+                            <div class="p-2 border rounded bg-white">
+                                <span class="text-secondary small d-block">Your Differential Advantage</span>
+                                <div class="fw-bold fs-5 text-success">${myDiffPoints.toLocaleString()} pts</div>
+                                <small class="text-muted" style="font-size:0.7rem">${myDifferentials.length} unique riders</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 border rounded bg-white">
+                                <span class="text-secondary small d-block">Rival Differential Advantage</span>
+                                <div class="fw-bold fs-5 text-danger">${rivalDiffPoints.toLocaleString()} pts</div>
+                                <small class="text-muted" style="font-size:0.7rem">${rivalDifferentials.length} unique riders</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <h6 class="small fw-bold text-success"><i class="fas fa-user-check"></i> Your Unique Differentials:</h6>
+                            <ul class="list-group list-group-flush small">
+                                ${myDifferentials.map(r => `<li class="list-group-item bg-transparent py-1 px-0 d-flex justify-content-between"><span>${r.flag} ${r.name}</span><span class="fw-bold">${r.pcs_points_season} pts</span></li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="small fw-bold text-danger"><i class="fas fa-user-minus"></i> Rival Unique Differentials:</h6>
+                            <ul class="list-group list-group-flush small">
+                                ${rivalDifferentials.map(r => `<li class="list-group-item bg-transparent py-1 px-0 d-flex justify-content-between"><span>${r.flag} ${r.name}</span><span class="fw-bold">${r.pcs_points_season} pts</span></li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRivalSquadSlots();
+            initRivalSearchAutocomplete();
+        });
     </script>
 </body>
 </html>

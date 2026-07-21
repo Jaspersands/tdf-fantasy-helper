@@ -5,7 +5,8 @@ const APP_STATE = {
     races: {
         'tdf': 'Tour de France 2026',
         'tdf2025': 'Tour de France 2025',
-        'vuelta': 'Vuelta 2025'
+        'vuelta': 'Vuelta 2025',
+        'tdffemmes': 'TdF Femmes 🇫🇷👧'
     }
 };
 

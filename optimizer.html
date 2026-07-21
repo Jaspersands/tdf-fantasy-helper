@@ -30,6 +30,7 @@
                             <li><a class="dropdown-item race-option" data-race="tdf" href="#">🇫🇷 Tour de France 2026</a></li>
                             <li><a class="dropdown-item race-option" data-race="tdf2025" href="#">🇫🇷 Tour de France 2025</a></li>
                             <li><a class="dropdown-item race-option" data-race="vuelta" href="#">🇪🇸 Vuelta 2025</a></li>
+                            <li><a class="dropdown-item race-option" data-race="tdffemmes" href="#">🇫🇷👧 Tour de France Femmes</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -131,8 +132,13 @@
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link fw-bold py-3 px-4 border-0" id="captain-tab" data-bs-toggle="tab" data-bs-target="#captain" type="button" role="tab" aria-controls="captain" aria-selected="false">
+                                <button class="nav-link fw-bold py-3 px-3 border-0" id="captain-tab" data-bs-toggle="tab" data-bs-target="#captain" type="button" role="tab" aria-controls="captain" aria-selected="false">
                                     <i class="fas fa-star"></i> Stage Captain Advisor
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold py-3 px-3 border-0" id="roadmap-tab" data-bs-toggle="tab" data-bs-target="#roadmap" type="button" role="tab" aria-controls="roadmap" aria-selected="false">
+                                    <i class="fas fa-map-signs"></i> Multi-Stage Roadmap
                                 </button>
                             </li>
                         </ul>
@@ -183,9 +189,9 @@
                                 <h5 class="card-title"><i class="fas fa-trophy text-warning"></i> Absolute Dream Team Solver</h5>
                                 <p class="text-muted small">Finds the mathematically optimal squad of 8 riders that yields the highest total points under the 120-credit limit and all category constraints (Leaders <= 3, Climbers <= 3, Sprinters <= 3, All-rounders <= 5, and max 3 per team).</p>
                                 
-                                <div class="text-center py-3">
-                                    <button class="btn btn-success px-4 py-2 fw-bold" onclick="runDreamTeamSolver()">
-                                        <i class="fas fa-magic"></i> Solve Optimal Squad
+                                <div class="text-center my-3">
+                                    <button class="btn btn-success px-4 py-2 fw-bold text-white shadow-sm" onclick="runDreamTeamSolver()">
+                                        <i class="fas fa-magic"></i> Solve Highest-Scoring Dream Team
                                     </button>
                                 </div>
 
@@ -227,6 +233,40 @@
                                     <div class="text-center text-muted py-4 border rounded bg-light">
                                         <i class="fas fa-star fa-2x mb-2 text-secondary"></i>
                                         <p class="mb-0">Select a stage from the dropdown list to see recommendations.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab 4: Multi-Stage Roadmap Planner -->
+                            <div class="tab-pane fade" id="roadmap" role="tabpanel" aria-labelledby="roadmap-tab">
+                                <h5 class="card-title text-dark"><i class="fas fa-map-signs text-primary"></i> Multi-Stage Strategy Roadmap</h5>
+                                <p class="text-muted small">Plan transfers across upcoming stages to optimize team transitions between flat sprints and mountain summits.</p>
+                                
+                                <div class="row g-3 align-items-center mb-4">
+                                    <div class="col-md-5">
+                                        <label for="startStageSelect" class="form-label fw-bold small text-dark">From Stage</label>
+                                        <select id="startStageSelect" class="form-select bg-white text-dark border-secondary" onchange="calculateMultiStageRoadmap()">
+                                            <option value="1">Stage 1</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label for="endStageSelect" class="form-label fw-bold small text-dark">To Stage</label>
+                                        <select id="endStageSelect" class="form-select bg-white text-dark border-secondary" onchange="calculateMultiStageRoadmap()">
+                                            <option value="5">Stage 5</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 pt-3 mt-md-4">
+                                        <button class="btn btn-primary w-100 py-2 fw-bold" onclick="calculateMultiStageRoadmap()">
+                                            <i class="fas fa-route"></i> Plan
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Roadmap Results -->
+                                <div id="roadmapResults" class="d-flex flex-column gap-3">
+                                    <div class="text-center text-muted py-4 border rounded bg-light">
+                                        <i class="fas fa-map-marked-alt fa-2x mb-2 text-secondary"></i>
+                                        <p class="mb-0">Select stage window above to see multi-stage transition advice.</p>
                                     </div>
                                 </div>
                             </div>
@@ -1137,6 +1177,138 @@
                             </div>
                         `;
                     }).join('')}
+                </div>
+            `;
+        }
+
+        // Populate stages select lists for Captain Advisor and Multi-Stage Roadmap
+        function populateStagesDropdown() {
+            const dropdown = document.getElementById('captainStageSelect');
+            const startDropdown = document.getElementById('startStageSelect');
+            const endDropdown = document.getElementById('endStageSelect');
+            
+            const raceStages = stagesData[APP_STATE.currentRace] || [];
+            if (raceStages.length === 0) {
+                if (dropdown) dropdown.innerHTML = '<option value="">No stages data available</option>';
+                return;
+            }
+            
+            if (dropdown) {
+                dropdown.innerHTML = raceStages.map(s => `
+                    <option value="${s.stage}">Stage ${s.stage}: ${s.course} (${s.distance})</option>
+                `).join('');
+            }
+            
+            if (startDropdown && endDropdown) {
+                startDropdown.innerHTML = raceStages.map(s => `
+                    <option value="${s.stage}">Stage ${s.stage}: ${s.type}</option>
+                `).join('');
+                endDropdown.innerHTML = raceStages.map((s, idx) => `
+                    <option value="${s.stage}" ${idx === 4 || idx === raceStages.length - 1 ? 'selected' : ''}>Stage ${s.stage}: ${s.type}</option>
+                `).join('');
+            }
+            
+            calculateCaptainRecommendation();
+            calculateMultiStageRoadmap();
+        }
+
+        // Calculate and render Multi-Stage Roadmap advice
+        function calculateMultiStageRoadmap() {
+            const startVal = parseInt(document.getElementById('startStageSelect')?.value || "1");
+            const endVal = parseInt(document.getElementById('endStageSelect')?.value || "5");
+            const resultsDiv = document.getElementById('roadmapResults');
+            
+            if (!resultsDiv) return;
+            
+            const raceStages = stagesData[APP_STATE.currentRace] || [];
+            const selectedStages = raceStages.filter(s => {
+                const sNum = parseInt(s.stage);
+                return sNum >= startVal && sNum <= endVal;
+            });
+            
+            if (selectedStages.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-warning text-center">
+                        <i class="fas fa-info-circle mb-2 fa-lg"></i>
+                        <p class="mb-0">Please select a valid stage window (start stage <= end stage).</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let flatCount = 0;
+            let mountainCount = 0;
+            let hillyCount = 0;
+            let ttCount = 0;
+            
+            selectedStages.forEach(s => {
+                const t = s.type.toLowerCase();
+                if (t.includes("flat") || t.includes("sprint")) flatCount++;
+                else if (t.includes("mountain") || t.includes("climb")) mountainCount++;
+                else if (t.includes("hilly") || t.includes("medium")) hillyCount++;
+                else if (t.includes("time trial") || t.includes("chrono")) ttCount++;
+            });
+            
+            let primaryRec = "";
+            let strategyTip = "";
+            
+            if (mountainCount >= flatCount && mountainCount >= hillyCount) {
+                primaryRec = "⛰️ Mountain Heavy Window — Load up on Climbers & GC Leaders";
+                strategyTip = "This stage range features major mountain passes and summit finishes. Prioritize swapping out pure Sprinters for high-value Climbers before this window starts.";
+            } else if (flatCount >= mountainCount && flatCount >= hillyCount) {
+                primaryRec = "⚡ Sprint Heavy Window — Maximize Top Sprinters";
+                strategyTip = "Flat terrain dominates this stage block. Ensure your active squad features top-tier Sprinters with 1.5x/2.0x form boosts for maximum points accumulation.";
+            } else {
+                primaryRec = "🚴 Mixed / Punchy Terrain Window — Balanced Squad with All-Rounders";
+                strategyTip = "This window features undulating hills and breakaway profiles. Keep versatile All-Rounders and aggressive punchy riders in your core squad.";
+            }
+            
+            resultsDiv.innerHTML = `
+                <div class="card bg-light border-primary p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0 fw-bold text-primary">${primaryRec}</h6>
+                        <span class="badge bg-primary">${selectedStages.length} Stages Window</span>
+                    </div>
+                    <p class="text-dark small mb-3">${strategyTip}</p>
+                    
+                    <div class="row g-2 text-center small mb-3">
+                        <div class="col-3">
+                            <div class="p-2 border rounded bg-white">
+                                <div class="fw-bold text-success">${flatCount}</div>
+                                <div class="text-secondary" style="font-size:0.7rem">Flat Stages</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="p-2 border rounded bg-white">
+                                <div class="fw-bold text-danger">${mountainCount}</div>
+                                <div class="text-secondary" style="font-size:0.7rem">Mountains</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="p-2 border rounded bg-white">
+                                <div class="fw-bold text-warning">${hillyCount}</div>
+                                <div class="text-secondary" style="font-size:0.7rem">Hilly Stages</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="p-2 border rounded bg-white">
+                                <div class="fw-bold text-info">${ttCount}</div>
+                                <div class="text-secondary" style="font-size:0.7rem">Time Trials</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-top pt-2">
+                        <small class="fw-bold text-secondary d-block mb-1">Stage Profile Breakdown:</small>
+                        <ul class="list-group list-group-flush small">
+                            ${selectedStages.map(s => `
+                                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center py-1 px-0">
+                                    <span><strong>Stage ${s.stage}:</strong> ${s.course}</span>
+                                    <span class="badge ${s.type.toLowerCase().includes('mountain') ? 'bg-danger' : (s.type.toLowerCase().includes('flat') ? 'bg-success' : 'bg-secondary')}">${s.type} (${s.distance})</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
                 </div>
             `;
         }
