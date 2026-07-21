@@ -82,7 +82,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2><i class="fas fa-users-cog"></i> Team Builder</h2>
             <div class="d-flex align-items-center gap-3">
-                <div class="badge bg-info fs-6">
+                <div id="maxBudgetBadge" class="badge bg-info fs-6">
                     Max Budget: 120 credits
                 </div>
             </div>
@@ -422,16 +422,16 @@
             const rider = APP_STATE.riders.find(r => r.name === name);
             if (!rider) return;
 
-            // Constraints checks
+            const rules = getRaceRules();
             const totalCost = currentSquad.reduce((sum, r) => sum + r.price, 0);
             
-            if (totalCost + rider.price > 120) {
-                alert(`Cannot add ${rider.name}. Adding him would exceed your maximum budget of 120 credits.`);
+            if (totalCost + rider.price > rules.maxBudget) {
+                alert(`Cannot add ${rider.name}. Adding her/him would exceed your maximum budget of ${rules.maxBudget} credits.`);
                 return;
             }
 
-            if (currentSquad.length >= 8) {
-                alert("Your squad is full! Maximum 8 riders allowed.");
+            if (currentSquad.length >= rules.maxRiders) {
+                alert(`Your squad is full! Maximum ${rules.maxRiders} riders allowed.`);
                 return;
             }
 
@@ -440,22 +440,16 @@
                 return;
             }
 
-            // Max 3 riders from the same professional team
+            // Max riders from the same professional team
             const teamCount = currentSquad.filter(r => r.team === rider.team).length;
-            if (teamCount >= 3) {
-                alert(`Cannot add ${rider.name}. You already have 3 riders from ${rider.team} (maximum allowed).`);
+            if (teamCount >= rules.maxPerTeam) {
+                alert(`Cannot add ${rider.name}. You already have ${rules.maxPerTeam} riders from ${rider.team} (maximum allowed).`);
                 return;
             }
 
             // Category Limits validation
-            const categoryLimits = {
-                'Leaders': 3,
-                'All-rounders': 5,
-                'Climbers': 3,
-                'Sprinters': 3
-            };
             const categoryCount = currentSquad.filter(r => r.category === rider.category).length;
-            const categoryLimit = categoryLimits[rider.category] || 0;
+            const categoryLimit = rules.categoryLimits[rider.category] || 0;
             if (categoryCount >= categoryLimit) {
                 alert(`Cannot add ${rider.name}. You have reached the limit of ${categoryLimit} riders for the "${rider.category}" category.`);
                 return;
@@ -492,6 +486,8 @@
             const grid = document.getElementById('squadGrid');
             if (!grid) return;
 
+            const rules = getRaceRules();
+
             // Group limits tracker
             const categoryCounts = { 'Leaders': 0, 'Climbers': 0, 'Sprinters': 0, 'All-rounders': 0 };
             let totalCost = 0;
@@ -506,31 +502,36 @@
             });
 
             // Update stats displays
-            document.getElementById('teamSize').textContent = `${currentSquad.length}/8 riders`;
+            const maxBudgetBadge = document.getElementById('maxBudgetBadge');
+            if (maxBudgetBadge) {
+                maxBudgetBadge.textContent = `Max Budget: ${rules.maxBudget} credits`;
+            }
+
+            document.getElementById('teamSize').textContent = `${currentSquad.length}/${rules.maxRiders} riders`;
             document.getElementById('teamCost').textContent = `${totalCost} credits`;
             document.getElementById('teamPoints').textContent = `${Math.round(totalPoints).toLocaleString()} points`;
 
-            document.getElementById('remainingBudget').textContent = 120 - totalCost;
+            document.getElementById('remainingBudget').textContent = rules.maxBudget - totalCost;
             document.getElementById('totalPoints').textContent = Math.round(totalPoints).toLocaleString();
             
             const avgPC = totalCost > 0 ? (totalPoints / totalCost) : 0.0;
             document.getElementById('avgEfficiency').textContent = avgPC.toFixed(1);
 
             // Update limits text
-            document.getElementById('leaders-count').textContent = `${categoryCounts['Leaders']}/3`;
-            document.getElementById('climbers-count').textContent = `${categoryCounts['Climbers']}/3`;
-            document.getElementById('sprinters-count').textContent = `${categoryCounts['Sprinters']}/3`;
-            document.getElementById('all-rounders-count').textContent = `${categoryCounts['All-rounders']}/5`;
+            document.getElementById('leaders-count').textContent = `${categoryCounts['Leaders']}/${rules.categoryLimits['Leaders']}`;
+            document.getElementById('climbers-count').textContent = `${categoryCounts['Climbers']}/${rules.categoryLimits['Climbers']}`;
+            document.getElementById('sprinters-count').textContent = `${categoryCounts['Sprinters']}/${rules.categoryLimits['Sprinters']}`;
+            document.getElementById('all-rounders-count').textContent = `${categoryCounts['All-rounders']}/${rules.categoryLimits['All-rounders']}`;
 
             // Style limits warnings if active limits hit
-            document.getElementById('leaders-count').className = categoryCounts['Leaders'] === 3 ? 'fw-bold text-warning' : 'fw-bold';
-            document.getElementById('climbers-count').className = categoryCounts['Climbers'] === 3 ? 'fw-bold text-warning' : 'fw-bold';
-            document.getElementById('sprinters-count').className = categoryCounts['Sprinters'] === 3 ? 'fw-bold text-warning' : 'fw-bold';
-            document.getElementById('all-rounders-count').className = categoryCounts['All-rounders'] === 5 ? 'fw-bold text-warning' : 'fw-bold';
+            document.getElementById('leaders-count').className = categoryCounts['Leaders'] === rules.categoryLimits['Leaders'] ? 'fw-bold text-warning' : 'fw-bold';
+            document.getElementById('climbers-count').className = categoryCounts['Climbers'] === rules.categoryLimits['Climbers'] ? 'fw-bold text-warning' : 'fw-bold';
+            document.getElementById('sprinters-count').className = categoryCounts['Sprinters'] === rules.categoryLimits['Sprinters'] ? 'fw-bold text-warning' : 'fw-bold';
+            document.getElementById('all-rounders-count').className = categoryCounts['All-rounders'] === rules.categoryLimits['All-rounders'] ? 'fw-bold text-warning' : 'fw-bold';
 
-            // Draw the 8 squad grid slots
+            // Draw the squad grid slots
             let squadHtml = '';
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < rules.maxRiders; i++) {
                 const rider = currentSquad[i];
                 if (rider) {
                     squadHtml += `

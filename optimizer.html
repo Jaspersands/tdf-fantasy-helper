@@ -673,7 +673,7 @@
 
         // Knapsack Solver implementation with form boosts and DNF checks
         function solveOptimalSquad() {
-            // Filter riders who actually have points and are NOT marked as out
+            const rules = getRaceRules();
             let pool = APP_STATE.riders.filter(r => {
                 const status = riderStatuses[r.name] || {};
                 const isOut = status.is_out !== undefined ? status.is_out : (r.is_out || false);
@@ -693,7 +693,7 @@
             let bestSquad = null;
 
             function backtrack(index, currentSquad, currentCost, currentPoints, catCounts, teamCounts) {
-                const slotsNeeded = 8 - currentSquad.length;
+                const slotsNeeded = rules.maxRiders - currentSquad.length;
                 
                 if (slotsNeeded === 0) {
                     if (currentPoints > bestPoints) {
@@ -721,18 +721,15 @@
                 const newCost = currentCost + rider.price;
                 const riderPoints = getEffectivePoints(rider);
                 
-                if (newCost <= 120) {
+                if (newCost <= rules.maxBudget) {
                     const cat = rider.category;
                     const team = rider.team;
                     const newCatCount = (catCounts[cat] || 0) + 1;
                     const newTeamCount = (teamCounts[team] || 0) + 1;
 
                     let valid = true;
-                    if (cat === 'Leaders' && newCatCount > 3) valid = false;
-                    else if (cat === 'Climbers' && newCatCount > 3) valid = false;
-                    else if (cat === 'Sprinters' && newCatCount > 3) valid = false;
-                    else if (cat === 'All-rounders' && newCatCount > 5) valid = false;
-                    if (newTeamCount > 3) valid = false;
+                    if (newCatCount > (rules.categoryLimits[cat] || 0)) valid = false;
+                    if (newTeamCount > rules.maxPerTeam) valid = false;
 
                     if (valid) {
                         currentSquad.push(rider);
@@ -769,8 +766,9 @@
         // SUB REPLACEMENT / TRANSFERS OPTIMIZER
         // ==========================================
         function runTransferOptimization() {
-            if (localSquad.length !== 8) {
-                alert("Your active squad must contain exactly 8 riders to optimize substitutions.");
+            const rules = getRaceRules();
+            if (localSquad.length !== rules.maxRiders) {
+                alert(`Your active squad must contain exactly ${rules.maxRiders} riders to optimize substitutions.`);
                 return;
             }
 
@@ -865,7 +863,7 @@
 
         // Solve optimal replacements including form boosts and DNFs
         function solveBestTransfers(numTransfers) {
-            // Get all pool riders not in current squad who are NOT DNF
+            const rules = getRaceRules();
             const currentNames = new Set(localSquad.map(r => r.name));
             let pool = APP_STATE.riders.filter(r => {
                 const status = riderStatuses[r.name] || {};
@@ -886,7 +884,7 @@
             const currentCost = localSquad.reduce((sum, r) => sum + r.price, 0);
             const transferOptions = [];
 
-            // Combinations of removing K riders from current squad (size 8)
+            // Combinations of removing K riders from current squad
             const removeCombinations = getCombinations(localSquad, numTransfers);
             // Combinations of adding K riders from pool
             const addCombinations = getCombinations(pool, numTransfers);
@@ -894,7 +892,6 @@
             for (let remOption of removeCombinations) {
                 const remNames = new Set(remOption.map(r => r.name));
                 const remCost = remOption.reduce((sum, r) => sum + r.price, 0);
-                // Points lost is the sum of effective points of outgoing riders (0 if they are out)
                 const remPoints = remOption.reduce((sum, r) => sum + getEffectivePoints(r), 0);
 
                 // Base squad metrics after removing riders
@@ -907,7 +904,7 @@
 
                     // Check budget constraint
                     const newCost = baseCost + addCost;
-                    if (newCost > 120) continue;
+                    if (newCost > rules.maxBudget) continue;
 
                     // Construct new squad candidate
                     const newSquad = [...baseSquad, ...addOption];
@@ -954,6 +951,7 @@
 
         // Check category and team constraints
         function validateSquadConstraints(squad) {
+            const rules = getRaceRules();
             const catCounts = { 'Leaders': 0, 'Climbers': 0, 'Sprinters': 0, 'All-rounders': 0 };
             const teamCounts = {};
 
@@ -964,11 +962,8 @@
                 catCounts[cat]++;
                 teamCounts[team] = (teamCounts[team] || 0) + 1;
 
-                if (cat === 'Leaders' && catCounts[cat] > 3) return false;
-                if (cat === 'Climbers' && catCounts[cat] > 3) return false;
-                if (cat === 'Sprinters' && catCounts[cat] > 3) return false;
-                if (cat === 'All-rounders' && catCounts[cat] > 5) return false;
-                if (teamCounts[team] > 3) return false;
+                if (catCounts[cat] > (rules.categoryLimits[cat] || 0)) return false;
+                if (teamCounts[team] > rules.maxPerTeam) return false;
             }
             return true;
         }

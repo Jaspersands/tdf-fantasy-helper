@@ -10,6 +10,37 @@ const APP_STATE = {
     }
 };
 
+const RACE_RULES = {
+    'tdf': {
+        maxRiders: 8,
+        maxBudget: 120,
+        maxPerTeam: 3,
+        categoryLimits: { 'Leaders': 3, 'Climbers': 3, 'Sprinters': 3, 'All-rounders': 5 }
+    },
+    'tdf2025': {
+        maxRiders: 8,
+        maxBudget: 120,
+        maxPerTeam: 3,
+        categoryLimits: { 'Leaders': 3, 'Climbers': 3, 'Sprinters': 3, 'All-rounders': 5 }
+    },
+    'vuelta': {
+        maxRiders: 8,
+        maxBudget: 120,
+        maxPerTeam: 3,
+        categoryLimits: { 'Leaders': 3, 'Climbers': 3, 'Sprinters': 3, 'All-rounders': 5 }
+    },
+    'tdffemmes': {
+        maxRiders: 7,
+        maxBudget: 110,
+        maxPerTeam: 3,
+        categoryLimits: { 'Leaders': 3, 'Climbers': 3, 'Sprinters': 3, 'All-rounders': 4 }
+    }
+};
+
+function getRaceRules(raceId = APP_STATE.currentRace) {
+    return RACE_RULES[raceId] || RACE_RULES['tdf'];
+}
+
 // Map nationality flag emoji to ISO codes
 const EMOJI_TO_COUNTRY = {
     '🇸🇮': 'SI', '🇩🇰': 'DK', '🇮🇹': 'IT', '🇧🇪': 'BE', '🇳🇱': 'NL', '🇬🇧': 'GB',
