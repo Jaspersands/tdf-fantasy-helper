@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riders - Fantasy TdF Helper</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-bicycle"></i> Fantasy TdF Helper
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Race Selector -->
+                <ul class="navbar-nav me-3">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="raceDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-flag-checkered"></i>
+                            <span class="text-warning">Loading Race...</span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="raceDropdown">
+                            <li><a class="dropdown-item race-option" data-race="tdf" href="#">🇫🇷 Tour de France 2026</a></li>
+                            <li><a class="dropdown-item race-option" data-race="tdf2025" href="#">🇫🇷 Tour de France 2025</a></li>
+                            <li><a class="dropdown-item race-option" data-race="vuelta" href="#">🇪🇸 Vuelta 2025</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">
+                            <i class="fas fa-users"></i> Riders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="compare.html">
+                            <i class="fas fa-balance-scale"></i> Compare
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="team-builder.html">
+                            <i class="fas fa-users-cog"></i> Team Builder
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="stats.html">
+                            <i class="fas fa-chart-bar"></i> Statistics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="optimizer.html">
+                            <i class="fas fa-magic"></i> Optimizer
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-users"></i> <span id="raceTitle">Tour de France 2026</span> Riders</h2>
+            <div class="d-flex align-items-center gap-3">
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="viewMode" id="cardView" autocomplete="off">
+                    <label class="btn btn-outline-secondary btn-sm" for="cardView">
+                        <i class="fas fa-th"></i> Cards
+                    </label>
+                    <input type="radio" class="btn-check" name="viewMode" id="tableView" autocomplete="off" checked>
+                    <label class="btn btn-outline-secondary btn-sm" for="tableView">
+                        <i class="fas fa-list"></i> Table
+                    </label>
+                </div>
+                <span class="badge bg-primary fs-6" id="riderCountBadge">
+                    0 / 0 riders
+                </span>
+            </div>
+        </div>
+
+        <!-- Filters card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-filter"></i> Filters and Sorting</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 small">
+                    <!-- Search by Rider Name -->
+                    <div class="col-md-3">
+                        <label class="form-label text-secondary fw-bold">Search Rider</label>
+                        <input type="text" id="riderSearchInput" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Type rider name...">
+                    </div>
+
+                    <!-- Category filter dropdown -->
+                    <div class="col-md-3">
+                        <label class="form-label text-secondary fw-bold">Categories</label>
+                        <div class="dropdown">
+                            <button class="custom-dropdown-btn w-100" type="button" id="catFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                                <span id="categoryText">All categories</span>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </button>
+                            <div class="dropdown-menu w-100 p-2" aria-labelledby="catFilterDropdown">
+                                <div class="form-check">
+                                    <input class="form-check-input category-check" type="checkbox" value="Leaders" id="cat-leaders" checked>
+                                    <label class="form-check-label" for="cat-leaders">Leaders</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input category-check" type="checkbox" value="Sprinters" id="cat-sprinters" checked>
+                                    <label class="form-check-label" for="cat-sprinters">Sprinters</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input category-check" type="checkbox" value="Climbers" id="cat-climbers" checked>
+                                    <label class="form-check-label" for="cat-climbers">Climbers</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input category-check" type="checkbox" value="All-rounders" id="cat-all-rounders" checked>
+                                    <label class="form-check-label" for="cat-all-rounders">All-rounders</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Team filter dropdown -->
+                    <div class="col-md-3">
+                        <label class="form-label text-secondary fw-bold">Teams</label>
+                        <div class="dropdown">
+                            <button class="custom-dropdown-btn w-100" type="button" id="teamFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                                <span id="teamText">All teams</span>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </button>
+                            <div class="dropdown-menu w-100 p-2" style="min-width: 280px;" aria-labelledby="teamFilterDropdown">
+                                <div class="mb-2">
+                                    <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary" id="teamSearchBox" placeholder="Search teams...">
+                                </div>
+                                <div id="teamCheckboxes" style="max-height: 250px; overflow-y: auto;">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="col-md-3 d-flex align-items-end gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary w-100 py-2" onclick="resetFilters()">
+                            <i class="fas fa-undo"></i> Reset Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards View Content -->
+        <div id="cardView-content" style="display: none;">
+            <div id="riderCardsGrid" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">
+                <!-- Cards rendered dynamically -->
+            </div>
+        </div>
+
+        <!-- Table View Content -->
+        <div id="tableView-content">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="sortable" onclick="sortTable(0)">Rider <i class="fas fa-sort"></i></th>
+                            <th class="sortable" onclick="sortTable(1)">Team <i class="fas fa-sort"></i></th>
+                            <th class="sortable text-center" onclick="sortTable(2)">Category <i class="fas fa-sort"></i></th>
+                            <th class="sortable text-center" onclick="sortTable(3)">PCS Points <i class="fas fa-sort"></i></th>
+                            <th class="sortable text-center" onclick="sortTable(4)">PCS 12m <i class="fas fa-sort"></i></th>
+                            <th class="sortable text-center" onclick="sortTable(5)">Wins <i class="fas fa-sort"></i></th>
+                            <th class="sortable text-center" onclick="sortTable(6)">Value/Cr <i class="fas fa-sort"></i></th>
+                            <th class="sortable text-center" onclick="sortTable(7)">Value Tier <i class="fas fa-sort"></i></th>
+                            <th class="sortable text-center" onclick="sortTable(8)">Price <i class="fas fa-sort"></i></th>
+                            <th class="sortable text-center" onclick="sortTable(9)">PCS Rank <i class="fas fa-sort"></i></th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ridersTableBody">
+                        <!-- Table rows rendered dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">
+                Data from <a href="https://www.procyclingstats.com" target="_blank" class="text-warning">ProCyclingStats</a>
+                | Fantasy from <a href="https://fantasybytissot.letour.fr" target="_blank" class="text-warning">Tour de France Fantasy</a>
+                | © Marek Šulik
+            </p>
+            <small class="text-muted" id="lastUpdatedDate">
+                Last data update: July 2026
+            </small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap & App Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+        let filteredRiders = [];
+        let sortColumn = -1;
+        let sortDirection = 'asc';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize App
+            await initApp();
+            
+            // Set race name in title
+            document.getElementById('raceTitle').textContent = APP_STATE.races[APP_STATE.currentRace];
+            
+            // Build dynamic team filter list
+            initTeamFilters();
+            
+            // Initialize views preference
+            initViewToggle();
+            
+            // Register filter change events
+            document.getElementById('riderSearchInput').addEventListener('input', applyFilters);
+            document.getElementById('teamSearchBox').addEventListener('input', filterTeamsList);
+            document.querySelectorAll('.category-check').forEach(cb => cb.addEventListener('change', applyFilters));
+            
+            // Initialize comparison UI drawer
+            initComparePanelUI();
+            
+            // Perform initial filtering and rendering
+            applyFilters();
+        });
+
+        // Populate unique teams list inside filters dropdown
+        function initTeamFilters() {
+            const teamContainer = document.getElementById('teamCheckboxes');
+            if (!teamContainer) return;
+            
+            // Get unique team names from riders database
+            const teams = [...new Set(APP_STATE.riders.map(r => r.team))].sort();
+            
+            teamContainer.innerHTML = teams.map((team, idx) => `
+                <div class="form-check">
+                    <input class="form-check-input team-check" type="checkbox" value="${team}" id="team-${idx}">
+                    <label class="form-check-label" for="team-${idx}">${team}</label>
+                </div>
+            `).join('');
+            
+            // Add listeners to team checkboxes
+            document.querySelectorAll('.team-check').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    updateTeamFilterText();
+                    applyFilters();
+                });
+            });
+        }
+
+        // Toggle Cards vs Table views
+        function initViewToggle() {
+            const cardViewRadio = document.getElementById('cardView');
+            const tableViewRadio = document.getElementById('tableView');
+            const cardContent = document.getElementById('cardView-content');
+            const tableContent = document.getElementById('tableView-content');
+
+            // Load saved preference, default to table
+            const savedView = localStorage.getItem('ridersViewMode') || 'table';
+            if (savedView === 'card') {
+                cardViewRadio.checked = true;
+                cardContent.style.display = 'block';
+                tableContent.style.display = 'none';
+            } else {
+                tableViewRadio.checked = true;
+                cardContent.style.display = 'none';
+                tableContent.style.display = 'block';
+            }
+
+            cardViewRadio.addEventListener('change', () => {
+                if (cardViewRadio.checked) {
+                    cardContent.style.display = 'block';
+                    tableContent.style.display = 'none';
+                    localStorage.setItem('ridersViewMode', 'card');
+                }
+            });
+
+            tableViewRadio.addEventListener('change', () => {
+                if (tableViewRadio.checked) {
+                    cardContent.style.display = 'none';
+                    tableContent.style.display = 'block';
+                    localStorage.setItem('ridersViewMode', 'table');
+                }
+            });
+        }
+
+        // Filter team list in dropdown search box
+        function filterTeamsList() {
+            const searchVal = document.getElementById('teamSearchBox').value.toLowerCase();
+            document.querySelectorAll('#teamCheckboxes .form-check').forEach(checkbox => {
+                const label = checkbox.querySelector('label').textContent.toLowerCase();
+                if (label.includes(searchVal)) {
+                    checkbox.style.display = 'flex';
+                } else {
+                    checkbox.style.display = 'none';
+                }
+            });
+        }
+
+        // Update the textual label of team filter
+        function updateTeamFilterText() {
+            const checkedTeams = Array.from(document.querySelectorAll('.team-check:checked')).map(cb => cb.value);
+            const teamText = document.getElementById('teamText');
+            
+            if (checkedTeams.length === 0) {
+                teamText.textContent = 'All teams';
+            } else if (checkedTeams.length === 1) {
+                teamText.textContent = checkedTeams[0];
+            } else {
+                teamText.textContent = `${checkedTeams.length} teams selected`;
+            }
+        }
+
+        // Reset all filters to default state
+        function resetFilters() {
+            document.getElementById('riderSearchInput').value = '';
+            document.getElementById('teamSearchBox').value = '';
+            document.querySelectorAll('.category-check').forEach(cb => cb.checked = true);
+            document.querySelectorAll('.team-check').forEach(cb => cb.checked = false);
+            
+            document.getElementById('categoryText').textContent = 'All categories';
+            updateTeamFilterText();
+            filterTeamsList();
+            applyFilters();
+        }
+
+        // Filter and sort riders list
+        function applyFilters() {
+            const searchVal = document.getElementById('riderSearchInput').value.toLowerCase();
+            const checkedCats = Array.from(document.querySelectorAll('.category-check:checked')).map(cb => cb.value);
+            const checkedTeams = Array.from(document.querySelectorAll('.team-check:checked')).map(cb => cb.value);
+
+            // Update category selector label
+            const categoryText = document.getElementById('categoryText');
+            if (checkedCats.length === 0) {
+                categoryText.textContent = 'None selected';
+            } else if (checkedCats.length === 4) {
+                categoryText.textContent = 'All categories';
+            } else {
+                categoryText.textContent = checkedCats.join(', ');
+            }
+
+            // Filter logic
+            filteredRiders = APP_STATE.riders.filter(rider => {
+                const matchesSearch = rider.name.toLowerCase().includes(searchVal) || rider.team.toLowerCase().includes(searchVal);
+                const matchesCategory = checkedCats.includes(rider.category);
+                const matchesTeam = checkedTeams.length === 0 || checkedTeams.includes(rider.team);
+                return matchesSearch && matchesCategory && matchesTeam;
+            });
+
+            // Re-apply sorting if any column is selected
+            if (sortColumn !== -1) {
+                sortRidersData(sortColumn, false);
+            }
+
+            // Update badges
+            document.getElementById('riderCountBadge').textContent = `${filteredRiders.length} / ${APP_STATE.riders.length} riders`;
+
+            // Render view lists
+            renderRidersTable();
+            renderRidersCards();
+        }
+
+        // Render riders inside Table View
+        function renderRidersTable() {
+            const tbody = document.getElementById('ridersTableBody');
+            if (!tbody) return;
+
+            if (filteredRiders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="11" class="text-center py-4 text-muted"><i class="fas fa-users-slash fa-2x mb-2 d-block"></i>No riders matched the selected criteria.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filteredRiders.map(rider => `
+                <tr class="rider-row ${rider.is_out ? 'opacity-50 text-decoration-line-through' : ''}">
+                    <td>
+                        <div>
+                            ${rider.flag} ${rider.name}
+                            ${rider.is_out ? '<span class="badge bg-danger ms-1" style="font-size:0.65rem;">DNF</span>' : ''}
+                        </div>
+                    </td>
+                    <td><span class="text-secondary">${rider.team}</span></td>
+                    <td class="text-center"><span class="badge ${getCategoryBadgeClass(rider.category)}">${rider.category}</span></td>
+                    <td class="text-center font-monospace">${formatPoints(rider.pcs_points_season)}</td>
+                    <td class="text-center font-monospace text-secondary">${formatPoints(rider.pcs_points_12m)}</td>
+                    <td class="text-center font-monospace">${rider.wins}</td>
+                    <td class="text-center font-monospace"><span class="${getValueColorClass(rider.value_tier)}">${rider.value_credit.toFixed(1)}</span></td>
+                    <td class="text-center"><span class="badge ${getValueColorClass(rider.value_tier)}">${rider.value_tier}</span></td>
+                    <td class="text-center font-monospace"><span class="badge text-dark bg-light fw-bold">${rider.price}⭐</span></td>
+                    <td class="text-center font-monospace">
+                        ${rider.pcs_rank <= 100 ? `<span class="badge bg-secondary text-white"><i class="fas fa-trophy text-warning"></i> #${rider.pcs_rank}</span>` : `<span class="text-secondary">#${rider.pcs_rank}</span>`}
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-secondary" onclick="addToCompare('${rider.name.replace(/'/g, "\\'")}')" title="Add to Compare">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" onclick="addRiderToTeam('${rider.name.replace(/'/g, "\\'")}')" title="Add to Team Builder">
+                                <i class="fas fa-user-plus"></i>
+                            </button>
+                            ${rider.pcs_link ? `<a href="${rider.pcs_link}" target="_blank" class="btn btn-outline-secondary" title="View PCS Profile"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Render riders inside Cards View
+        function renderRidersCards() {
+            const grid = document.getElementById('riderCardsGrid');
+            if (!grid) return;
+
+            if (filteredRiders.length === 0) {
+                grid.innerHTML = `<div class="col-12 text-center py-4 text-muted"><i class="fas fa-users-slash fa-2x mb-2 d-block"></i>No riders matched the selected criteria.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filteredRiders.map(rider => `
+                <div class="col">
+                    <div class="card h-100 rider-card category-${rider.category.toLowerCase()} ${rider.is_out ? 'opacity-50 text-decoration-line-through' : ''}">
+                        <div class="card-header d-flex justify-content-between align-items-center py-2">
+                            <h6 class="mb-0 text-truncate">
+                                ${rider.flag} ${rider.name}
+                                ${rider.is_out ? '<span class="badge bg-danger ms-1" style="font-size:0.65rem;">DNF</span>' : ''}
+                            </h6>
+                            <span class="badge text-dark bg-light fw-bold">${rider.price}⭐</span>
+                        </div>
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <div class="mb-3">
+                                <p class="text-secondary small mb-1 text-truncate" title="${rider.team}">
+                                    <i class="fas fa-users"></i> ${rider.team}
+                                </p>
+                                <div class="d-flex gap-1 flex-wrap mb-2">
+                                    <span class="badge ${getCategoryBadgeClass(rider.category)}">${rider.category}</span>
+                                    <span class="badge ${getValueColorClass(rider.value_tier)}">${rider.value_tier}</span>
+                                    <span class="badge bg-dark text-white">#${rider.pcs_rank} PCS</span>
+                                </div>
+                                <div class="row g-1 text-center bg-dark rounded p-2 small">
+                                    <div class="col-4 border-end border-secondary">
+                                        <div class="fw-bold">${formatPoints(rider.pcs_points_season)}</div>
+                                        <div class="text-muted" style="font-size:0.7rem">Points</div>
+                                    </div>
+                                    <div class="col-4 border-end border-secondary">
+                                        <div class="fw-bold">${rider.wins}</div>
+                                        <div class="text-muted" style="font-size:0.7rem">Wins</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="fw-bold text-success">${rider.value_credit.toFixed(1)}</div>
+                                        <div class="text-muted" style="font-size:0.7rem">Val/Cr</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-xs btn-outline-secondary w-50 py-1" onclick="addToCompare('${rider.name.replace(/'/g, "\\'")}')">
+                                    <i class="fas fa-plus"></i> Compare
+                                </button>
+                                <button class="btn btn-xs btn-primary w-50 py-1" onclick="addRiderToTeam('${rider.name.replace(/'/g, "\\'")}')">
+                                    <i class="fas fa-user-plus"></i> Add Team
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Helper to map tier text to color class
+        function getValueColorClass(tier) {
+            const classes = {
+                'Excellent': 'value-excellent',
+                'Great': 'value-great',
+                'Good': 'value-good',
+                'Average': 'value-average',
+                'Poor': 'value-poor'
+            };
+            return classes[tier] || 'value-unknown';
+        }
+
+        // Quick add to team helper
+        function addRiderToTeam(name) {
+            const rider = APP_STATE.riders.find(r => r.name === name);
+            if (!rider) return;
+
+            // Load current squad
+            let currentTeam = TeamManager.get();
+            
+            // Validations
+            const totalCost = currentTeam.reduce((sum, r) => sum + r.price, 0);
+            
+            if (totalCost + rider.price > 120) {
+                alert(`Adding ${rider.name} would exceed your budget of 120 credits.`);
+                return;
+            }
+            if (currentTeam.length >= 8) {
+                alert('Team is full! Maximum 8 riders allowed.');
+                return;
+            }
+            if (currentTeam.find(r => r.name === name)) {
+                alert('Rider already in team!');
+                return;
+            }
+            
+            const teamCount = currentTeam.filter(r => r.team === rider.team).length;
+            if (teamCount >= 3) {
+                alert(`Cannot add ${rider.name}. Maximum 3 riders from same team (${rider.team}) allowed.`);
+                return;
+            }
+            
+            const categoryLimits = { 'Leaders': 3, 'All-rounders': 5, 'Climbers': 3, 'Sprinters': 3 };
+            const categoryCount = currentTeam.filter(r => r.category === rider.category).length;
+            const categoryLimit = categoryLimits[rider.category] || 0;
+            if (categoryCount >= categoryLimit) {
+                alert(`Cannot add ${rider.name}. Maximum ${categoryLimit} ${rider.category} allowed.`);
+                return;
+            }
+
+            // Add rider
+            currentTeam.push(rider);
+            TeamManager.save(currentTeam);
+            alert(`Added ${rider.name} to Team Builder squad!`);
+        }
+
+        // Sort table columns
+        function sortTable(colIndex) {
+            if (sortColumn === colIndex) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = colIndex;
+                sortDirection = 'asc';
+            }
+            
+            // Update sort icon visual indicators
+            const headers = document.querySelectorAll('.table th.sortable');
+            headers.forEach((header, index) => {
+                const icon = header.querySelector('i');
+                if (index === colIndex) {
+                    icon.className = sortDirection === 'asc' ? 'fas fa-sort-up text-white' : 'fas fa-sort-down text-white';
+                } else {
+                    icon.className = 'fas fa-sort';
+                }
+            });
+
+            sortRidersData(colIndex, true);
+        }
+
+        function sortRidersData(colIndex, render = true) {
+            filteredRiders.sort((a, b) => {
+                let valA, valB;
+                
+                switch(colIndex) {
+                    case 0: // Rider Name
+                        // Sort by last name if possible
+                        const getLastName = (fullName) => {
+                            const parts = fullName.split(' ');
+                            // Return first word in full capitals if it exists, or last word
+                            for (let i = 1; i < parts.length; i++) {
+                                if (parts[i] === parts[i].toUpperCase() && parts[i].length > 1) {
+                                    return parts[i];
+                                }
+                            }
+                            return parts[parts.length - 1];
+                        }
+                        valA = getLastName(a.name);
+                        valB = getLastName(b.name);
+                        break;
+                    case 1: // Team
+                        valA = a.team;
+                        valB = b.team;
+                        break;
+                    case 2: // Category
+                        valA = a.category;
+                        valB = b.category;
+                        break;
+                    case 3: // PCS Points
+                        valA = a.pcs_points_season;
+                        valB = b.pcs_points_season;
+                        break;
+                    case 4: // PCS 12m
+                        valA = a.pcs_points_12m;
+                        valB = b.pcs_points_12m;
+                        break;
+                    case 5: // Wins
+                        valA = a.wins;
+                        valB = b.wins;
+                        break;
+                    case 6: // Value/Cr
+                        valA = a.value_credit;
+                        valB = b.value_credit;
+                        break;
+                    case 7: // Value Tier
+                        const tierWeight = { 'Excellent': 5, 'Great': 4, 'Good': 3, 'Average': 2, 'Poor': 1 };
+                        valA = tierWeight[a.value_tier] || 0;
+                        valB = tierWeight[b.value_tier] || 0;
+                        break;
+                    case 8: // Price
+                        valA = a.price;
+                        valB = b.price;
+                        break;
+                    case 9: // PCS Rank
+                        valA = a.pcs_rank;
+                        valB = b.pcs_rank;
+                        break;
+                    default:
+                        return 0;
+                }
+
+                if (typeof valA === 'string') {
+                    return sortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                } else {
+                    return sortDirection === 'asc' ? valA - valB : valB - valA;
+                }
+            });
+
+            if (render) {
+                renderRidersTable();
+                renderRidersCards();
+            }
+        }
+    </script>
+</body>
+</html>

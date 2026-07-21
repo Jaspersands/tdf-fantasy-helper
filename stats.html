@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics - Fantasy TdF Helper</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-bicycle"></i> Fantasy TdF Helper
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Race Selector -->
+                <ul class="navbar-nav me-3">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="raceDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-flag-checkered"></i>
+                            <span class="text-warning">Loading Race...</span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="raceDropdown">
+                            <li><a class="dropdown-item race-option" data-race="tdf" href="#">🇫🇷 Tour de France 2026</a></li>
+                            <li><a class="dropdown-item race-option" data-race="tdf2025" href="#">🇫🇷 Tour de France 2025</a></li>
+                            <li><a class="dropdown-item race-option" data-race="vuelta" href="#">🇪🇸 Vuelta 2025</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-users"></i> Riders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="compare.html">
+                            <i class="fas fa-balance-scale"></i> Compare
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="team-builder.html">
+                            <i class="fas fa-users-cog"></i> Team Builder
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="stats.html">
+                            <i class="fas fa-chart-bar"></i> Statistics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="optimizer.html">
+                            <i class="fas fa-magic"></i> Optimizer
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-chart-bar"></i> Statistics & Analytics (<span id="raceTitle">Tour de France 2026</span>)</h2>
+        </div>
+
+        <!-- Overview Cards -->
+        <div class="row mb-4 text-center">
+            <div class="col-md-3 mb-3">
+                <div class="card bg-primary text-white h-100 py-3">
+                    <div class="card-body">
+                        <i class="fas fa-users fa-2x mb-2"></i>
+                        <h3 class="mb-0" id="totalRidersCount">0</h3>
+                        <small class="text-white-50">Total Riders</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-success text-white h-100 py-3">
+                    <div class="card-body">
+                        <i class="fas fa-check-circle fa-2x mb-2"></i>
+                        <h3 class="mb-0" id="matchedCount">0</h3>
+                        <small class="text-white-50">PCS Data Matched</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-info text-white h-100 py-3">
+                    <div class="card-body">
+                        <i class="fas fa-percentage fa-2x mb-2"></i>
+                        <h3 class="mb-0" id="matchRate">100.0%</h3>
+                        <small class="text-white-50">Match Rate</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-warning text-white h-100 py-3">
+                    <div class="card-body">
+                        <i class="fas fa-coins fa-2x mb-2"></i>
+                        <h3 class="mb-0" id="avgPrice">0.0</h3>
+                        <small class="text-white-50">Avg Price (Credits)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Breakdown -->
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h6 class="mb-0"><i class="fas fa-chart-pie"></i> Category Statistics</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Category</th>
+                                <th class="text-center">Count</th>
+                                <th class="text-center">Avg Price</th>
+                                <th class="text-center">Avg Points</th>
+                                <th class="text-center">Avg P/C Ratio</th>
+                                <th class="text-center">Best Value Rider</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoryStatsBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Layout -->
+        <div class="row">
+            <!-- Left Chart -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-coins"></i> Price Distribution by Category</h6>
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center" style="min-height:300px">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Chart -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-chart-line"></i> Value Tiers Distribution</h6>
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center" style="min-height:300px">
+                        <canvas id="valueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">
+                Data from <a href="https://www.procyclingstats.com" target="_blank" class="text-warning">ProCyclingStats</a>
+                | Fantasy from <a href="https://fantasybytissot.letour.fr" target="_blank" class="text-warning">Tour de France Fantasy</a>
+                | © Marek Šulik
+            </p>
+            <small class="text-muted" id="lastUpdatedDate">
+                Last data update: July 2026
+            </small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap, Chart.js & App Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+    <script>
+        let priceChartInstance = null;
+        let valueChartInstance = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load application database
+            await initApp();
+
+            // Set Title
+            document.getElementById('raceTitle').textContent = APP_STATE.races[APP_STATE.currentRace];
+
+            // Render stats
+            renderStatsDashboard();
+        });
+
+        function renderStatsDashboard() {
+            const riders = APP_STATE.riders;
+            if (riders.length === 0) return;
+
+            // Overview calculations
+            const totalRiders = riders.length;
+            const matchedCount = riders.filter(r => r.pcs_link !== "").length;
+            const matchRate = totalRiders > 0 ? (matchedCount / totalRiders) * 100 : 0.0;
+            const totalCost = riders.reduce((sum, r) => sum + r.price, 0);
+            const avgPrice = totalRiders > 0 ? (totalCost / totalRiders) : 0.0;
+
+            document.getElementById('totalRidersCount').textContent = totalRiders;
+            document.getElementById('matchedCount').textContent = matchedCount;
+            document.getElementById('matchRate').textContent = `${matchRate.toFixed(1)}%`;
+            document.getElementById('avgPrice').textContent = avgPrice.toFixed(1);
+
+            // Group metrics by category
+            const categories = ['Leaders', 'Sprinters', 'Climbers', 'All-rounders'];
+            const catData = {};
+            categories.forEach(cat => {
+                catData[cat] = { count: 0, totalPrice: 0, totalPoints: 0, totalRatio: 0, bestValueRider: null, maxRatio: -1 };
+            });
+
+            riders.forEach(rider => {
+                const cat = rider.category;
+                if (catData[cat]) {
+                    catData[cat].count++;
+                    catData[cat].totalPrice += rider.price;
+                    catData[cat].totalPoints += rider.pcs_points_season;
+                    catData[cat].totalRatio += rider.value_credit;
+                    
+                    if (rider.value_credit > catData[cat].maxRatio) {
+                        catData[cat].maxRatio = rider.value_credit;
+                        catData[cat].bestValueRider = rider;
+                    }
+                }
+            });
+
+            // Render Category table
+            const tbody = document.getElementById('categoryStatsBody');
+            tbody.innerHTML = categories.map(cat => {
+                const stats = catData[cat];
+                const avgCatPrice = stats.count > 0 ? stats.totalPrice / stats.count : 0;
+                const avgCatPoints = stats.count > 0 ? stats.totalPoints / stats.count : 0;
+                const avgCatRatio = stats.count > 0 ? stats.totalRatio / stats.count : 0;
+
+                let icon = 'fa-star';
+                if (cat === 'Leaders') icon = 'fa-crown';
+                else if (cat === 'Sprinters') icon = 'fa-rocket';
+                else if (cat === 'Climbers') icon = 'fa-mountain';
+
+                return `
+                    <tr>
+                        <td>
+                            <i class="fas ${icon} me-2 text-warning"></i>
+                            <span class="badge ${getCategoryBadgeClass(cat)}">${cat}</span>
+                        </td>
+                        <td class="text-center font-monospace">${stats.count}</td>
+                        <td class="text-center font-monospace">${avgCatPrice.toFixed(1)}</td>
+                        <td class="text-center font-monospace">${Math.round(avgCatPoints).toLocaleString()}</td>
+                        <td class="text-center font-monospace text-success">${avgCatRatio.toFixed(1)}</td>
+                        <td class="text-center">
+                            ${stats.bestValueRider ? `
+                                <span class="badge bg-success" title="Ratio: ${stats.bestValueRider.value_credit.toFixed(1)}">
+                                    ${stats.bestValueRider.flag} ${stats.bestValueRider.name}
+                                </span>
+                            ` : 'N/A'}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Render Charts
+            renderPriceChart(catData);
+            renderValueChart(riders);
+        }
+
+        // Render Bar Chart for category prices
+        function renderPriceChart(catData) {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            
+            const categories = Object.keys(catData);
+            const avgPrices = categories.map(cat => {
+                const stats = catData[cat];
+                return stats.count > 0 ? parseFloat((stats.totalPrice / stats.count).toFixed(1)) : 0;
+            });
+
+            if (priceChartInstance) {
+                priceChartInstance.destroy();
+            }
+
+            priceChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: 'Average Price (Credits)',
+                        data: avgPrices,
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.75)',  // Leaders - green
+                            'rgba(59, 130, 246, 0.75)',  // Sprinters - blue  
+                            'rgba(249, 115, 22, 0.75)',  // Climbers - orange
+                            'rgba(251, 191, 36, 0.75)'   // All-rounders - yellow
+                        ],
+                        borderColor: [
+                            '#10b981',
+                            '#3b82f6',
+                            '#f97316',
+                            '#fbbf24'
+                        ],
+                        borderWidth: 1.5,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#e2e8f0' },
+                            ticks: { color: '#64748b' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#64748b' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // Render Doughnut Chart for value tiers count
+        function renderValueChart(riders) {
+            const ctx = document.getElementById('valueChart').getContext('2d');
+
+            const tiers = ['Excellent', 'Great', 'Good', 'Average', 'Poor'];
+            const counts = { 'Excellent': 0, 'Great': 0, 'Good': 0, 'Average': 0, 'Poor': 0 };
+            
+            riders.forEach(r => {
+                if (counts.hasOwnProperty(r.value_tier)) {
+                    counts[r.value_tier]++;
+                }
+            });
+
+            const tierCounts = tiers.map(tier => counts[tier]);
+
+            if (valueChartInstance) {
+                valueChartInstance.destroy();
+            }
+
+            valueChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: tiers,
+                    datasets: [{
+                        data: tierCounts,
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.75)',  // Excellent - Green
+                            'rgba(110, 231, 183, 0.75)', // Great - Light Green
+                            'rgba(59, 130, 246, 0.75)',  // Good - Blue
+                            'rgba(245, 158, 11, 0.75)',  // Average - Amber
+                            'rgba(239, 68, 68, 0.75)'    // Poor - Red
+                        ],
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#64748b', font: { family: 'Outfit, Arial' } }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

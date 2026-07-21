@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimizer - Fantasy TdF Helper</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-bicycle"></i> Fantasy TdF Helper
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Race Selector -->
+                <ul class="navbar-nav me-3">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="raceDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-flag-checkered"></i>
+                            <span class="text-warning">Loading Race...</span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="raceDropdown">
+                            <li><a class="dropdown-item race-option" data-race="tdf" href="#">🇫🇷 Tour de France 2026</a></li>
+                            <li><a class="dropdown-item race-option" data-race="tdf2025" href="#">🇫🇷 Tour de France 2025</a></li>
+                            <li><a class="dropdown-item race-option" data-race="vuelta" href="#">🇪🇸 Vuelta 2025</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-users"></i> Riders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="compare.html">
+                            <i class="fas fa-balance-scale"></i> Compare
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="team-builder.html">
+                            <i class="fas fa-users-cog"></i> Team Builder
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="stats.html">
+                            <i class="fas fa-chart-bar"></i> Statistics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="optimizer.html">
+                            <i class="fas fa-magic"></i> Optimizer
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-magic text-warning"></i> Squad Optimizer & Substitutions</h2>
+        </div>
+
+        <div class="row">
+            <!-- Left Side: My Current Squad -->
+            <div class="col-lg-5 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="fas fa-users"></i> My Active Squad (<span id="squadCount">0</span>/8)</h6>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-xs btn-outline-warning text-warning" onclick="loadFromTeamBuilder()" style="font-size: 0.75rem;">
+                                <i class="fas fa-sync-alt"></i> Sync
+                            </button>
+                            <button class="btn btn-xs btn-outline-secondary text-secondary" onclick="clearCustomStatuses()" style="font-size: 0.75rem;">
+                                <i class="fas fa-trash-alt"></i> Reset Status
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small">This is your current team. Optimize transfers or calculate replacements based on these selected riders.</p>
+                        
+                        <!-- Manual Rider Selector to build active team on this page -->
+                        <div class="mb-3 position-relative">
+                            <label for="riderSearchAdd" class="form-label small font-weight-bold">Search and Add Rider</label>
+                            <input type="text" id="riderSearchAdd" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Type name to add rider...">
+                            <div id="searchAutocompleteList" class="dropdown-menu w-100 mt-1" style="max-height: 250px; overflow-y: auto; display: none;"></div>
+                        </div>
+
+                        <!-- Active Squad List -->
+                        <div id="activeSquadList" class="d-flex flex-column gap-2">
+                            <!-- Populated dynamically -->
+                        </div>
+
+                        <div class="mt-3 p-3 bg-light rounded border">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-secondary small">Total Credits:</span>
+                                <span class="font-monospace fw-bold" id="squadCost">0 / 120</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-secondary small">Total Points:</span>
+                                <span class="font-monospace fw-bold text-success" id="squadPoints">0 pts</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Optimizer Tools (Tabs) -->
+            <div class="col-lg-7 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-light p-0 border-bottom">
+                        <ul class="nav nav-tabs card-header-tabs m-0 border-bottom-0" id="optimizerTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active fw-bold py-3 px-4 border-0" id="transfers-tab" data-bs-toggle="tab" data-bs-target="#transfers" type="button" role="tab" aria-controls="transfers" aria-selected="true">
+                                    <i class="fas fa-exchange-alt"></i> substitution Advisor
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold py-3 px-4 border-0" id="dreamteam-tab" data-bs-toggle="tab" data-bs-target="#dreamteam" type="button" role="tab" aria-controls="dreamteam" aria-selected="false">
+                                    <i class="fas fa-trophy"></i> TdF Dream Team Solver
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold py-3 px-4 border-0" id="captain-tab" data-bs-toggle="tab" data-bs-target="#captain" type="button" role="tab" aria-controls="captain" aria-selected="false">
+                                    <i class="fas fa-star"></i> Stage Captain Advisor
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <!-- Tab Content -->
+                        <div class="tab-content" id="optimizerTabContent">
+                            
+                            <!-- Tab 1: Transfers Advisor -->
+                            <div class="tab-pane fade show active" id="transfers" role="tabpanel" aria-labelledby="transfers-tab">
+                                <h5 class="card-title"><i class="fas fa-lightbulb text-warning"></i> Optimize Substitutions</h5>
+                                <p class="text-muted small">Analyze which rider swaps will yield the highest season points increase while maintaining all budget and team constraints.</p>
+                                
+                                <div class="row g-3 align-items-center mb-4">
+                                    <div class="col-md-6">
+                                        <label for="numTransfers" class="form-label fw-bold small">Number of transfers to optimize</label>
+                                        <select id="numTransfers" class="form-select bg-dark text-white border-secondary">
+                                            <option value="1" selected>1 Transfer (Fastest)</option>
+                                            <option value="2">2 Transfers (Recommended)</option>
+                                            <option value="3">3 Transfers (Deep Search)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 pt-3 mt-md-4">
+                                        <button class="btn btn-primary w-100 py-2 fw-bold" onclick="runTransferOptimization()">
+                                            <i class="fas fa-calculator"></i> Calculate Best Transfers
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Transfer Results -->
+                                <div id="transferLoader" class="text-center py-4" style="display: none;">
+                                    <div class="spinner-border text-warning" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2 text-secondary small">Searching all combinations...</p>
+                                </div>
+
+                                <div id="transferResults" class="d-flex flex-column gap-3">
+                                    <div class="text-center text-muted py-4 border rounded bg-light">
+                                        <i class="fas fa-search fa-2x mb-2 text-secondary"></i>
+                                        <p class="mb-0">Click the button above to calculate transfer recommendations.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab 2: Dream Team Solver -->
+                            <div class="tab-pane fade" id="dreamteam" role="tabpanel" aria-labelledby="dreamteam-tab">
+                                <h5 class="card-title"><i class="fas fa-trophy text-warning"></i> Absolute Dream Team Solver</h5>
+                                <p class="text-muted small">Finds the mathematically optimal squad of 8 riders that yields the highest total points under the 120-credit limit and all category constraints (Leaders <= 3, Climbers <= 3, Sprinters <= 3, All-rounders <= 5, and max 3 per team).</p>
+                                
+                                <div class="text-center py-3">
+                                    <button class="btn btn-success px-4 py-2 fw-bold" onclick="runDreamTeamSolver()">
+                                        <i class="fas fa-magic"></i> Solve Optimal Squad
+                                    </button>
+                                </div>
+
+                                <!-- Solver Results -->
+                                <div id="solverLoader" class="text-center py-4" style="display: none;">
+                                    <div class="spinner-border text-success" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2 text-secondary small">Solving knapsack constraints...</p>
+                                </div>
+
+                                <div id="solverResults" class="mt-3">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                            
+                            <!-- Tab 3: Stage Captain Advisor -->
+                            <div class="tab-pane fade" id="captain" role="tabpanel" aria-labelledby="captain-tab">
+                                <h5 class="card-title text-dark"><i class="fas fa-star text-warning"></i> Stage Captain Advisor (Double Points)</h5>
+                                <p class="text-muted small">Select the upcoming stage to find the best-suited rider in your active squad to wear the Captain's armband (2x points multiplier) based on terrain suitability.</p>
+                                
+                                <div class="row g-3 align-items-center mb-4">
+                                    <div class="col-md-8">
+                                        <label for="captainStageSelect" class="form-label fw-bold small text-dark">Choose Stage</label>
+                                        <select id="captainStageSelect" class="form-select bg-white text-dark border-secondary" onchange="calculateCaptainRecommendation()">
+                                            <option value="">Loading stages...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 pt-3 mt-md-4">
+                                        <div class="p-2 border rounded bg-white text-center">
+                                            <span class="text-secondary small d-block">Stage Type:</span>
+                                            <span class="fw-bold text-dark text-uppercase small" id="stageTypeLabel">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Captain Advisor Results -->
+                                <div id="captainResults" class="d-flex flex-column gap-3">
+                                    <div class="text-center text-muted py-4 border rounded bg-light">
+                                        <i class="fas fa-star fa-2x mb-2 text-secondary"></i>
+                                        <p class="mb-0">Select a stage from the dropdown list to see recommendations.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">
+                Data from <a href="https://www.procyclingstats.com" target="_blank" class="text-warning">ProCyclingStats</a>
+                | Fantasy from <a href="https://fantasybytissot.letour.fr" target="_blank" class="text-warning">Tour de France Fantasy</a>
+                | © Marek Šulik
+            </p>
+            <small class="text-muted" id="lastUpdatedDate">
+                Last data update: July 2026
+            </small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap & App Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+        let localSquad = [];
+        let riderStatuses = {}; // format: { "T. POGACAR": { is_out: false, form_boost: 1.0 } }
+        let stagesData = {};
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load application database
+            await initApp();
+            
+            // Load custom rider statuses from localStorage
+            const savedStatuses = localStorage.getItem(`rider_statuses_${APP_STATE.currentRace}`);
+            riderStatuses = savedStatuses ? JSON.parse(savedStatuses) : {};
+            
+            // Sync with Team Builder storage initially
+            loadFromTeamBuilder();
+            
+            // Set up Autocomplete search
+            initSearchAutocomplete();
+
+            // Load stages data
+            try {
+                const stagesResponse = await fetch('stages_data.json');
+                stagesData = await stagesResponse.json();
+                populateStagesDropdown();
+            } catch (e) {
+                console.error("Error loading stages data:", e);
+            }
+        });
+
+        // Load active team from localStorage
+        function loadFromTeamBuilder() {
+            localSquad = TeamManager.get() || [];
+            renderSquadList();
+            if (typeof calculateCaptainRecommendation === 'function') {
+                calculateCaptainRecommendation();
+            }
+        }
+
+        // Save statuses to localStorage
+        function saveRiderStatuses() {
+            localStorage.setItem(`rider_statuses_${APP_STATE.currentRace}`, JSON.stringify(riderStatuses));
+        }
+
+        // Reset all overrides
+        function clearCustomStatuses() {
+            if (confirm("Reset all DNF/crashed-out statuses and form boost overrides for this race?")) {
+                riderStatuses = {};
+                saveRiderStatuses();
+                renderSquadList();
+                if (typeof calculateCaptainRecommendation === 'function') {
+                    calculateCaptainRecommendation();
+                }
+                // If search is active, refresh it
+                const searchVal = document.getElementById('riderSearchAdd').value.trim();
+                if (searchVal) {
+                    document.getElementById('riderSearchAdd').dispatchEvent(new Event('input'));
+                }
+            }
+        }
+
+        // Toggle DNF status
+        function toggleRiderOut(riderName) {
+            if (!riderStatuses[riderName]) {
+                riderStatuses[riderName] = { is_out: false, form_boost: 1.0 };
+            }
+            riderStatuses[riderName].is_out = !riderStatuses[riderName].is_out;
+            saveRiderStatuses();
+            renderSquadList();
+            if (typeof calculateCaptainRecommendation === 'function') {
+                calculateCaptainRecommendation();
+            }
+        }
+
+        // Set form boost multiplier
+        function setRiderBoost(riderName, boostVal) {
+            if (!riderStatuses[riderName]) {
+                riderStatuses[riderName] = { is_out: false, form_boost: 1.0 };
+            }
+            riderStatuses[riderName].form_boost = parseFloat(boostVal);
+            saveRiderStatuses();
+            renderSquadList();
+            if (typeof calculateCaptainRecommendation === 'function') {
+                calculateCaptainRecommendation();
+            }
+        }
+
+        // Toggle DNF status from pool search autocomplete
+        function togglePoolRiderOut(riderName) {
+            if (!riderStatuses[riderName]) {
+                riderStatuses[riderName] = { is_out: false, form_boost: 1.0 };
+            }
+            riderStatuses[riderName].is_out = !riderStatuses[riderName].is_out;
+            saveRiderStatuses();
+            document.getElementById('riderSearchAdd').dispatchEvent(new Event('input'));
+            renderSquadList();
+            if (typeof calculateCaptainRecommendation === 'function') {
+                calculateCaptainRecommendation();
+            }
+        }
+
+        // Toggle Form Boost from pool search autocomplete
+        function togglePoolRiderBoost(riderName, currentBoost) {
+            if (!riderStatuses[riderName]) {
+                riderStatuses[riderName] = { is_out: false, form_boost: 1.0 };
+            }
+            riderStatuses[riderName].form_boost = currentBoost === 1.5 ? 1.0 : 1.5;
+            saveRiderStatuses();
+            document.getElementById('riderSearchAdd').dispatchEvent(new Event('input'));
+            renderSquadList();
+            if (typeof calculateCaptainRecommendation === 'function') {
+                calculateCaptainRecommendation();
+            }
+        }
+
+        // Get effective points including form boost and DNF status
+        function getEffectivePoints(rider) {
+            const status = riderStatuses[rider.name] || {};
+            const isOut = status.is_out !== undefined ? status.is_out : (rider.is_out || false);
+            if (isOut) return 0;
+            return rider.pcs_points_season * (status.form_boost || 1.0);
+        }
+
+        // Render Active Squad (Left Column)
+        function renderSquadList() {
+            const listContainer = document.getElementById('activeSquadList');
+            const squadCount = document.getElementById('squadCount');
+            const squadCost = document.getElementById('squadCost');
+            const squadPoints = document.getElementById('squadPoints');
+            
+            squadCount.textContent = localSquad.length;
+            
+            if (localSquad.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-4 border border-dashed rounded text-muted bg-white">
+                        <i class="fas fa-users-slash fa-2x mb-2 text-secondary"></i>
+                        <p class="mb-0 small">No riders selected yet.</p>
+                        <small class="text-secondary">Search above or click "Sync"</small>
+                    </div>
+                `;
+                squadCost.textContent = "0 / 120";
+                squadPoints.textContent = "0 pts";
+                return;
+            }
+
+            // Calculate costs and points
+            const totalCost = localSquad.reduce((sum, r) => sum + r.price, 0);
+            const totalPoints = localSquad.reduce((sum, r) => sum + getEffectivePoints(r), 0);
+            
+            squadCost.textContent = `${totalCost} / 120`;
+            squadPoints.textContent = `${Math.round(totalPoints).toLocaleString()} pts`;
+            
+            if (totalCost > 120) {
+                squadCost.className = "font-monospace fw-bold text-danger";
+            } else {
+                squadCost.className = "font-monospace fw-bold text-dark";
+            }
+
+            listContainer.innerHTML = localSquad.map((rider, idx) => {
+                const status = riderStatuses[rider.name] || { is_out: undefined, form_boost: 1.0 };
+                const isOut = status.is_out !== undefined ? status.is_out : (rider.is_out || false);
+                const boost = status.form_boost;
+                
+                const cardClass = isOut ? "d-flex flex-column p-3 border rounded bg-light opacity-50 text-decoration-line-through" : "d-flex flex-column p-3 border rounded bg-white shadow-sm";
+                
+                return `
+                    <div class="${cardClass}">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-muted font-monospace small">${idx + 1}</span>
+                                <div>
+                                    <h6 class="mb-0 font-weight-bold" style="font-size: 0.9rem;">
+                                        ${rider.flag} ${rider.name}
+                                        ${isOut ? '<span class="badge bg-danger ms-1" style="font-size:0.65rem;">OUT/DNF</span>' : ''}
+                                        ${boost > 1.0 ? `<span class="badge bg-warning text-dark ms-1" style="font-size:0.65rem;">🔥 ${boost}x Boost</span>` : ''}
+                                    </h6>
+                                    <small class="text-secondary font-monospace" style="font-size: 0.75rem;">
+                                        ${rider.team}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge ${getCategoryBadgeClass(rider.category)}">${rider.category}</span>
+                                <div class="text-end me-1">
+                                    <div class="fw-bold font-monospace text-primary" style="font-size: 0.85rem;">${rider.price}⭐</div>
+                                    <div class="text-success font-monospace" style="font-size: 0.75rem;">
+                                        ${Math.round(rider.pcs_points_season * (isOut ? 0 : boost)).toLocaleString()} pts
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-link text-danger p-0" onclick="removeRider(${idx})" title="Remove from this view">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- DNF switch & form boost dropdown -->
+                        <div class="d-flex justify-content-between align-items-center mt-2 border-top pt-2" style="font-size: 0.8rem;">
+                            <div class="form-check form-switch m-0">
+                                <input class="form-check-input" type="checkbox" id="outSwitch-${idx}" ${isOut ? 'checked' : ''} onchange="toggleRiderOut('${rider.name.replace(/'/g, "\\'")}')">
+                                <label class="form-check-label text-danger fw-bold cursor-pointer" for="outSwitch-${idx}">
+                                    <i class="fas fa-heart-broken"></i> DNF / Injured
+                                </label>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <span class="text-secondary small me-1">Form Weight:</span>
+                                <select class="form-select form-select-xs py-0 px-1 border-secondary bg-white text-dark" style="font-size: 0.75rem; width: auto;" onchange="setRiderBoost('${rider.name.replace(/'/g, "\\'")}', this.value)">
+                                    <option value="1.0" ${boost === 1.0 ? 'selected' : ''}>1.0x (Normal)</option>
+                                    <option value="1.2" ${boost === 1.2 ? 'selected' : ''}>1.2x (Steady)</option>
+                                    <option value="1.5" ${boost === 1.5 ? 'selected' : ''}>1.5x (🔥 Hot)</option>
+                                    <option value="2.0" ${boost === 2.0 ? 'selected' : ''}>2.0x (🚀 Super)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Remove rider from active squad
+        function removeRider(index) {
+            localSquad.splice(index, 1);
+            renderSquadList();
+        }
+
+        // Add rider from autocomplete search list
+        function addRiderToLocalSquad(rider) {
+            if (localSquad.length >= 8) {
+                alert("Squad limit reached (Max 8 riders). Remove a rider first.");
+                return;
+            }
+            if (localSquad.some(r => r.name === rider.name)) {
+                alert("Rider already in active squad.");
+                return;
+            }
+            localSquad.push(rider);
+            renderSquadList();
+            document.getElementById('riderSearchAdd').value = '';
+            document.getElementById('searchAutocompleteList').style.display = 'none';
+        }
+
+        // Autocomplete setup with status toggles
+        function initSearchAutocomplete() {
+            const input = document.getElementById('riderSearchAdd');
+            const list = document.getElementById('searchAutocompleteList');
+
+            input.addEventListener('input', () => {
+                const val = input.value.trim().toLowerCase();
+                if (!val) {
+                    list.style.display = 'none';
+                    return;
+                }
+
+                // Search matches
+                const matches = APP_STATE.riders.filter(r => r.name.toLowerCase().includes(val)).slice(0, 10);
+                
+                if (matches.length === 0) {
+                    list.innerHTML = `<div class="dropdown-item text-muted disabled">No matching riders found</div>`;
+                } else {
+                    list.innerHTML = matches.map(r => {
+                        const status = riderStatuses[r.name] || { is_out: undefined, form_boost: 1.0 };
+                        const isOut = status.is_out !== undefined ? status.is_out : (r.is_out || false);
+                        const boost = status.form_boost;
+
+                        return `
+                            <div class="dropdown-item d-flex justify-content-between align-items-center py-2 border-bottom text-dark bg-white">
+                                <div>
+                                    <strong class="${isOut ? 'text-decoration-line-through text-muted' : ''}">${r.flag} ${r.name}</strong>
+                                    <br><small class="text-secondary">${r.team} | ${r.category}</small>
+                                    ${isOut ? '<span class="badge bg-danger ms-1" style="font-size:0.65rem;">OUT</span>' : ''}
+                                    ${boost > 1.0 ? `<span class="badge bg-warning text-dark ms-1" style="font-size:0.65rem;">🔥 ${boost}x</span>` : ''}
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <!-- Boost Toggle -->
+                                    <button class="btn btn-xs ${boost > 1.0 ? 'btn-warning' : 'btn-outline-warning'} py-0 px-1" onclick="togglePoolRiderBoost('${r.name.replace(/'/g, "\\'")}', ${boost})" title="Toggle Hot Form (1.5x)">
+                                        <i class="fas fa-fire"></i>
+                                    </button>
+                                    <!-- DNF Switch -->
+                                    <button class="btn btn-xs ${isOut ? 'btn-danger text-white' : 'btn-outline-danger'} py-0 px-1" onclick="togglePoolRiderOut('${r.name.replace(/'/g, "\\'")}')" title="Toggle DNF / Out">
+                                        <i class="fas fa-heart-broken"></i>
+                                    </button>
+                                    <!-- Add button -->
+                                    <button class="btn btn-xs btn-primary py-0 px-1 ms-1 text-white" onclick='selectAutocompleteRider(${JSON.stringify(r).replace(/'/g, "&#39;")})'>
+                                        + Add
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                list.style.display = 'block';
+            });
+
+            // Close on click outside
+            document.addEventListener('click', (e) => {
+                if (e.target !== input && e.target !== list) {
+                    list.style.display = 'none';
+                }
+            });
+        }
+
+        function selectAutocompleteRider(rider) {
+            addRiderToLocalSquad(rider);
+        }
+
+        // ==========================================
+        // SQUAD SOLVER / DREAM TEAM (Knapsack search)
+        // ==========================================
+        function runDreamTeamSolver() {
+            const loader = document.getElementById('solverLoader');
+            const results = document.getElementById('solverResults');
+            
+            loader.style.display = 'block';
+            results.innerHTML = '';
+
+            setTimeout(() => {
+                const solution = solveOptimalSquad();
+                loader.style.display = 'none';
+                
+                if (!solution || solution.length === 0) {
+                    results.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i> Failed to compute optimal squad. Check if riders data is loaded correctly.
+                        </div>
+                    `;
+                    return;
+                }
+
+                const totalCost = solution.reduce((sum, r) => sum + r.price, 0);
+                const totalPoints = solution.reduce((sum, r) => sum + getEffectivePoints(r), 0);
+
+                results.innerHTML = `
+                    <div class="p-3 bg-success text-white rounded mb-3 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0 fw-bold"><i class="fas fa-check-circle"></i> Dream Team Solved!</h5>
+                            <small class="text-white-50">Mathematically proven highest season points configuration</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="h4 mb-0 fw-bold font-monospace">${Math.round(totalPoints).toLocaleString()} pts</div>
+                            <small class="text-white-50 font-monospace">${totalCost} / 120 Credits</small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex flex-column gap-2 mb-4">
+                        ${solution.map((rider, idx) => {
+                            const status = riderStatuses[rider.name] || {};
+                            return `
+                                <div class="d-flex align-items-center justify-content-between p-2 border rounded bg-white">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-muted font-monospace small">${idx + 1}</span>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">
+                                                ${rider.flag} ${rider.name}
+                                                ${status.form_boost > 1.0 ? `<span class="badge bg-warning text-dark ms-1" style="font-size:0.65rem;">🔥 ${status.form_boost}x</span>` : ''}
+                                            </h6>
+                                            <small class="text-secondary font-monospace" style="font-size: 0.75rem;">${rider.team}</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="badge ${getCategoryBadgeClass(rider.category)}">${rider.category}</span>
+                                        <div class="text-end">
+                                            <span class="fw-bold text-primary font-monospace">${rider.price}⭐</span>
+                                            <br><small class="text-success font-monospace" style="font-size: 0.75rem;">
+                                                ${Math.round(getEffectivePoints(rider)).toLocaleString()} pts
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <button class="btn btn-outline-success w-100 py-2 fw-bold" onclick='applyDreamTeamToBuilder(${JSON.stringify(solution).replace(/'/g, "&#39;")})'>
+                        <i class="fas fa-check"></i> Save and Load Squad into Team Builder
+                    </button>
+                `;
+            }, 50);
+        }
+
+        // Knapsack Solver implementation with form boosts and DNF checks
+        function solveOptimalSquad() {
+            // Filter riders who actually have points and are NOT marked as out
+            let pool = APP_STATE.riders.filter(r => {
+                const status = riderStatuses[r.name] || {};
+                const isOut = status.is_out !== undefined ? status.is_out : (r.is_out || false);
+                return r.pcs_points_season > 0 && !isOut;
+            });
+            
+            // Sort pool in descending order of effective points
+            pool.sort((a, b) => getEffectivePoints(b) - getEffectivePoints(a));
+            
+            // Limit pool size to keep solver extremely fast (top 60 points earners)
+            const POOL_SIZE = 60;
+            if (pool.length > POOL_SIZE) {
+                pool = pool.slice(0, POOL_SIZE);
+            }
+
+            let bestPoints = 0;
+            let bestSquad = null;
+
+            function backtrack(index, currentSquad, currentCost, currentPoints, catCounts, teamCounts) {
+                const slotsNeeded = 8 - currentSquad.length;
+                
+                if (slotsNeeded === 0) {
+                    if (currentPoints > bestPoints) {
+                        bestPoints = currentPoints;
+                        bestSquad = [...currentSquad];
+                    }
+                    return;
+                }
+
+                if (index >= pool.length) return;
+
+                // Branch-and-Bound: Prune if remaining selections cannot beat bestPoints
+                let maxPossibleRemainingPoints = 0;
+                for (let k = 0; k < slotsNeeded; k++) {
+                    if (index + k < pool.length) {
+                        maxPossibleRemainingPoints += getEffectivePoints(pool[index + k]);
+                    }
+                }
+                if (currentPoints + maxPossibleRemainingPoints <= bestPoints) {
+                    return;
+                }
+
+                // Option A: Include pool[index]
+                const rider = pool[index];
+                const newCost = currentCost + rider.price;
+                const riderPoints = getEffectivePoints(rider);
+                
+                if (newCost <= 120) {
+                    const cat = rider.category;
+                    const team = rider.team;
+                    const newCatCount = (catCounts[cat] || 0) + 1;
+                    const newTeamCount = (teamCounts[team] || 0) + 1;
+
+                    let valid = true;
+                    if (cat === 'Leaders' && newCatCount > 3) valid = false;
+                    else if (cat === 'Climbers' && newCatCount > 3) valid = false;
+                    else if (cat === 'Sprinters' && newCatCount > 3) valid = false;
+                    else if (cat === 'All-rounders' && newCatCount > 5) valid = false;
+                    if (newTeamCount > 3) valid = false;
+
+                    if (valid) {
+                        currentSquad.push(rider);
+                        catCounts[cat] = newCatCount;
+                        teamCounts[team] = newTeamCount;
+
+                        backtrack(index + 1, currentSquad, newCost, currentPoints + riderPoints, catCounts, teamCounts);
+
+                        // Undo choice
+                        currentSquad.pop();
+                        catCounts[cat] = newCatCount - 1;
+                        teamCounts[team] = newTeamCount - 1;
+                    }
+                }
+
+                // Option B: Exclude pool[index]
+                if (pool.length - (index + 1) >= slotsNeeded) {
+                    backtrack(index + 1, currentSquad, currentCost, currentPoints, catCounts, teamCounts);
+                }
+            }
+
+            backtrack(0, [], 0, 0, {}, {});
+            return bestSquad;
+        }
+
+        // Apply solved squad to storage and redirect
+        function applyDreamTeamToBuilder(squad) {
+            TeamManager.save(squad);
+            alert("Dream Team saved as your active squad!");
+            window.location.href = `team-builder.html?race=${APP_STATE.currentRace}`;
+        }
+
+        // ==========================================
+        // SUB REPLACEMENT / TRANSFERS OPTIMIZER
+        // ==========================================
+        function runTransferOptimization() {
+            if (localSquad.length !== 8) {
+                alert("Your active squad must contain exactly 8 riders to optimize substitutions.");
+                return;
+            }
+
+            const numTransfers = parseInt(document.getElementById('numTransfers').value);
+            const loader = document.getElementById('transferLoader');
+            const results = document.getElementById('transferResults');
+
+            loader.style.display = 'block';
+            results.innerHTML = '';
+
+            setTimeout(() => {
+                const recommendations = solveBestTransfers(numTransfers);
+                loader.style.display = 'none';
+
+                if (recommendations.length === 0) {
+                    results.innerHTML = `
+                        <div class="alert alert-warning text-center py-4">
+                            <i class="fas fa-info-circle fa-2x mb-2 text-warning"></i>
+                            <p class="mb-0">No points-increasing transfers found. Your current squad is already optimal!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                results.innerHTML = recommendations.map((rec, recIdx) => {
+                    const costChange = rec.newCost - rec.oldCost;
+                    const sign = costChange > 0 ? "+" : "";
+                    
+                    return `
+                        <div class="card border-primary">
+                            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2">
+                                <h6 class="mb-0 fw-bold">
+                                    <span class="badge bg-warning text-dark me-2">Option ${recIdx + 1}</span> 
+                                    Net Gain: <span class="text-success fw-bold font-monospace">+${Math.round(rec.netGain).toLocaleString()} pts</span>
+                                </h6>
+                                <span class="small font-monospace text-white-50">Credits change: ${sign}${costChange.toFixed(1)}</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Outgoing -->
+                                    <div class="col-md-6 mb-3 mb-md-0 border-end border-light">
+                                        <div class="text-danger fw-bold small mb-2"><i class="fas fa-arrow-circle-right"></i> SUBSTITUTE OUT</div>
+                                        <div class="d-flex flex-column gap-2">
+                                            ${rec.outRiders.map(r => {
+                                                const status = riderStatuses[r.name] || {};
+                                                return `
+                                                    <div class="d-flex justify-content-between align-items-center p-2 rounded bg-light border border-danger-subtle" style="font-size: 0.85rem;">
+                                                        <div>
+                                                            <strong class="${status.is_out ? 'text-decoration-line-through text-muted' : ''}">${r.flag} ${r.name}</strong>
+                                                            <br><small class="text-secondary">${r.category}</small>
+                                                            ${status.is_out ? '<span class="badge bg-danger ms-1" style="font-size:0.6rem;">OUT</span>' : ''}
+                                                        </div>
+                                                        <span class="text-danger font-monospace fw-bold">${r.price}⭐</span>
+                                                    </div>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Incoming -->
+                                    <div class="col-md-6">
+                                        <div class="text-success fw-bold small mb-2"><i class="fas fa-arrow-circle-left"></i> SUBSTITUTE IN</div>
+                                        <div class="d-flex flex-column gap-2">
+                                            ${rec.inRiders.map(r => {
+                                                const status = riderStatuses[r.name] || {};
+                                                return `
+                                                    <div class="d-flex justify-content-between align-items-center p-2 rounded bg-light border border-success-subtle" style="font-size: 0.85rem;">
+                                                        <div>
+                                                            <strong>${r.flag} ${r.name}</strong>
+                                                            <br><small class="text-secondary">${r.category}</small>
+                                                            ${status.form_boost > 1.0 ? `<span class="badge bg-warning text-dark ms-1" style="font-size:0.6rem;">🔥 ${status.form_boost}x</span>` : ''}
+                                                        </div>
+                                                        <span class="text-success font-monospace fw-bold">${r.price}⭐</span>
+                                                    </div>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-end mt-3 border-top pt-2">
+                                    <button class="btn btn-sm btn-primary px-3 fw-bold text-white" onclick='applySubstitutions(${JSON.stringify(rec.outNames).replace(/'/g, "&#39;")}, ${JSON.stringify(rec.inRiders).replace(/'/g, "&#39;")})'>
+                                        <i class="fas fa-check"></i> Apply Substitution
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }, 50);
+        }
+
+        // Solve optimal replacements including form boosts and DNFs
+        function solveBestTransfers(numTransfers) {
+            // Get all pool riders not in current squad who are NOT DNF
+            const currentNames = new Set(localSquad.map(r => r.name));
+            let pool = APP_STATE.riders.filter(r => {
+                const status = riderStatuses[r.name] || {};
+                const isOut = status.is_out !== undefined ? status.is_out : (r.is_out || false);
+                return !currentNames.has(r.name) && r.pcs_points_season > 0 && !isOut;
+            });
+            
+            // Sort pool by effective points descending
+            pool.sort((a, b) => getEffectivePoints(b) - getEffectivePoints(a));
+
+            // Limit pool size based on K to prevent lag
+            let poolLimit = 80;
+            if (numTransfers === 3) poolLimit = 35;
+            if (pool.length > poolLimit) {
+                pool = pool.slice(0, poolLimit);
+            }
+
+            const currentCost = localSquad.reduce((sum, r) => sum + r.price, 0);
+            const transferOptions = [];
+
+            // Combinations of removing K riders from current squad (size 8)
+            const removeCombinations = getCombinations(localSquad, numTransfers);
+            // Combinations of adding K riders from pool
+            const addCombinations = getCombinations(pool, numTransfers);
+
+            for (let remOption of removeCombinations) {
+                const remNames = new Set(remOption.map(r => r.name));
+                const remCost = remOption.reduce((sum, r) => sum + r.price, 0);
+                // Points lost is the sum of effective points of outgoing riders (0 if they are out)
+                const remPoints = remOption.reduce((sum, r) => sum + getEffectivePoints(r), 0);
+
+                // Base squad metrics after removing riders
+                const baseSquad = localSquad.filter(r => !remNames.has(r.name));
+                const baseCost = currentCost - remCost;
+                
+                for (let addOption of addCombinations) {
+                    const addCost = addOption.reduce((sum, r) => sum + r.price, 0);
+                    const addPoints = addOption.reduce((sum, r) => sum + getEffectivePoints(r), 0);
+
+                    // Check budget constraint
+                    const newCost = baseCost + addCost;
+                    if (newCost > 120) continue;
+
+                    // Construct new squad candidate
+                    const newSquad = [...baseSquad, ...addOption];
+                    
+                    // Validate category and team constraints
+                    if (validateSquadConstraints(newSquad)) {
+                        const netGain = addPoints - remPoints;
+                        if (netGain > 0) {
+                            transferOptions.push({
+                                outRiders: remOption,
+                                outNames: remOption.map(r => r.name),
+                                inRiders: addOption,
+                                netGain: netGain,
+                                oldCost: currentCost,
+                                newCost: newCost
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Sort transfer options by points gain descending
+            transferOptions.sort((a, b) => b.netGain - a.netGain);
+            return transferOptions.slice(0, 5); // return top 5 options
+        }
+
+        // Helper to generate combinations of size k from array
+        function getCombinations(arr, k) {
+            const results = [];
+            function helper(start, combo) {
+                if (combo.length === k) {
+                    results.push([...combo]);
+                    return;
+                }
+                for (let i = start; i < arr.length; i++) {
+                    combo.push(arr[i]);
+                    helper(i + 1, combo);
+                    combo.pop();
+                }
+            }
+            helper(0, []);
+            return results;
+        }
+
+        // Check category and team constraints
+        function validateSquadConstraints(squad) {
+            const catCounts = { 'Leaders': 0, 'Climbers': 0, 'Sprinters': 0, 'All-rounders': 0 };
+            const teamCounts = {};
+
+            for (let rider of squad) {
+                const cat = rider.category;
+                const team = rider.team;
+                
+                catCounts[cat]++;
+                teamCounts[team] = (teamCounts[team] || 0) + 1;
+
+                if (cat === 'Leaders' && catCounts[cat] > 3) return false;
+                if (cat === 'Climbers' && catCounts[cat] > 3) return false;
+                if (cat === 'Sprinters' && catCounts[cat] > 3) return false;
+                if (cat === 'All-rounders' && catCounts[cat] > 5) return false;
+                if (teamCounts[team] > 3) return false;
+            }
+            return true;
+        }
+
+        // Apply substitution and save
+        function applySubstitutions(outNames, inRiders) {
+            const outSet = new Set(outNames);
+            let updatedSquad = localSquad.filter(r => !outSet.has(r.name));
+            
+            // Clean up custom status mappings for outgoing riders to prevent memory bloat
+            outNames.forEach(name => {
+                delete riderStatuses[name];
+            });
+            saveRiderStatuses();
+            
+            updatedSquad = [...updatedSquad, ...inRiders];
+            
+            TeamManager.save(updatedSquad);
+            alert("Substitutions applied to your squad!");
+            window.location.href = `team-builder.html?race=${APP_STATE.currentRace}`;
+        }
+
+        // Populate stages select list
+        function populateStagesDropdown() {
+            const dropdown = document.getElementById('captainStageSelect');
+            if (!dropdown) return;
+            
+            const raceStages = stagesData[APP_STATE.currentRace] || [];
+            if (raceStages.length === 0) {
+                dropdown.innerHTML = '<option value="">No stages data available for this race</option>';
+                return;
+            }
+            
+            dropdown.innerHTML = raceStages.map(s => `
+                <option value="${s.stage}">Stage ${s.stage}: ${s.course} (${s.distance})</option>
+            `).join('');
+            
+            calculateCaptainRecommendation();
+        }
+
+        // Calculate and render Stage Captain advisor recommendations
+        function calculateCaptainRecommendation() {
+            const stageSelect = document.getElementById('captainStageSelect');
+            const typeLabel = document.getElementById('stageTypeLabel');
+            const resultsDiv = document.getElementById('captainResults');
+            
+            if (!stageSelect || !typeLabel || !resultsDiv) return;
+            
+            const raceStages = stagesData[APP_STATE.currentRace] || [];
+            const selectedStageNum = stageSelect.value;
+            const stage = raceStages.find(s => s.stage === selectedStageNum);
+            
+            if (!stage) {
+                typeLabel.textContent = "-";
+                resultsDiv.innerHTML = `
+                    <div class="text-center text-muted py-4 border rounded bg-light">
+                        <i class="fas fa-info-circle fa-2x mb-2 text-secondary"></i>
+                        <p class="mb-0">Please select a stage to see recommendations.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            typeLabel.textContent = stage.type;
+            
+            if (localSquad.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-warning text-center">
+                        <i class="fas fa-exclamation-triangle mb-2 fa-lg"></i>
+                        <p class="mb-0">Your active squad is empty. Please select or sync your squad to see captain recommendations.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const terrain = stage.type.toLowerCase();
+            const rankedRiders = [...localSquad].map(rider => {
+                const status = riderStatuses[rider.name] || {};
+                const isOut = status.is_out !== undefined ? status.is_out : (rider.is_out || false);
+                const boost = status.form_boost || 1.0;
+                const points = isOut ? 0 : (rider.pcs_points_season * boost);
+                
+                let suitabilityScore = 0;
+                let reason = "";
+                
+                if (isOut) {
+                    suitabilityScore = -99999;
+                    reason = "Injured / DNF - Currently crashed out or retired.";
+                } else {
+                    if (terrain.includes("flat") || terrain.includes("sprint")) {
+                        if (rider.category === 'Sprinters') {
+                            suitabilityScore = 10000 + points;
+                            reason = "Specialist Sprinter - perfect match for flat terrain bunch sprint finishes.";
+                        } else if (rider.category === 'All-rounders') {
+                            suitabilityScore = 5000 + points;
+                            reason = "Versatile All-rounder - good secondary choice for flat terrain finishes.";
+                        } else {
+                            suitabilityScore = points;
+                            reason = "GC Contender / Climber - low suitability for flat bunch finishes; select only as backup.";
+                        }
+                    } else if (terrain.includes("mountain") || terrain.includes("climb")) {
+                        if (rider.category === 'Climbers') {
+                            suitabilityScore = 10000 + points;
+                            reason = "Specialist Climber - highly suited for mountain profiles and summit finishes.";
+                        } else if (rider.category === 'Leaders') {
+                            suitabilityScore = 8000 + points;
+                            reason = "GC Leader - highly suited for mountain stages and overall GC contention.";
+                        } else if (rider.category === 'All-rounders') {
+                            suitabilityScore = 4000 + points;
+                            reason = "All-rounder - moderate climbing capability, may assist or go in breakaway.";
+                        } else {
+                            suitabilityScore = points;
+                            reason = "Sprinter - likely to drop back during mountain climbs.";
+                        }
+                    } else if (terrain.includes("hilly") || terrain.includes("medium")) {
+                        if (rider.category === 'All-rounders') {
+                            suitabilityScore = 10000 + points;
+                            reason = "Punchy All-rounder - ideal for undulating profiles, breakaway attempts, and punchy hills.";
+                        } else if (rider.category === 'Leaders') {
+                            suitabilityScore = 7000 + points;
+                            reason = "GC Leader - strong contender to keep up with key attacks on hilly stages.";
+                        } else if (rider.category === 'Climbers') {
+                            suitabilityScore = 6000 + points;
+                            reason = "Climber - capable on hilly terrain, but may lack descending punch or final flat sprint speed.";
+                        } else {
+                            suitabilityScore = points;
+                            reason = "Sprinter - likely to struggle on steep intermediate hills.";
+                        }
+                    } else if (terrain.includes("time trial") || terrain.includes("chrono")) {
+                        if (rider.category === 'Leaders') {
+                            suitabilityScore = 10000 + points;
+                            reason = "GC Leader - typically the strongest time trialists in the squad.";
+                        } else if (rider.category === 'All-rounders') {
+                            suitabilityScore = 5000 + points;
+                            reason = "All-rounder - decent time trial capabilities.";
+                        } else {
+                            suitabilityScore = points;
+                            reason = "Rider - basic time trial suitability.";
+                        }
+                    } else {
+                        suitabilityScore = points;
+                        reason = "Rider - general suitability based on season points.";
+                    }
+                }
+                
+                return {
+                    rider,
+                    score: suitabilityScore,
+                    reason,
+                    points,
+                    isOut
+                };
+            });
+            
+            rankedRiders.sort((a, b) => b.score - a.score);
+            const healthyRiders = rankedRiders.filter(r => !r.isOut);
+            
+            if (healthyRiders.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-danger text-center m-0">
+                        <i class="fas fa-heart-broken mb-2 fa-lg"></i>
+                        <p class="mb-0">All riders in your active squad are marked as OUT/DNF! Swap them out to get recommendations.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const badges = [
+                { title: "Primary Choice", color: "bg-warning text-dark", star: "fas fa-star text-warning" },
+                { title: "Alternative Choice", color: "bg-secondary text-white", star: "fas fa-star-half-alt text-secondary" },
+                { title: "Backup Choice", color: "bg-light text-dark border", star: "far fa-star text-muted" }
+            ];
+            
+            resultsDiv.innerHTML = `
+                <div class="mb-2">
+                    <span class="text-secondary small">Terrain Suitability Recommendations:</span>
+                </div>
+                <div class="d-flex flex-column gap-2">
+                    ${healthyRiders.slice(0, 3).map((item, idx) => {
+                        const b = badges[idx] || { title: "Choice", color: "bg-light text-dark", star: "far fa-star" };
+                        const status = riderStatuses[item.rider.name] || {};
+                        
+                        return `
+                            <div class="card shadow-sm border-${idx === 0 ? 'warning' : 'light'} bg-white">
+                                <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="fs-4"><i class="${b.star}"></i></div>
+                                        <div>
+                                            <span class="badge ${b.color} mb-1" style="font-size:0.65rem">${b.title}</span>
+                                            <h6 class="mb-1 fw-bold text-dark">
+                                                ${item.rider.flag} ${item.rider.name}
+                                                ${status.form_boost > 1.0 ? `<span class="badge bg-warning text-dark ms-1" style="font-size:0.65rem">🔥 ${status.form_boost}x</span>` : ''}
+                                            </h6>
+                                            <p class="text-secondary mb-0 small" style="font-size:0.8rem">
+                                                ${item.reason}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge ${getCategoryBadgeClass(item.rider.category)}">${item.rider.category}</span>
+                                        <div class="text-success font-monospace fw-bold mt-1" style="font-size:0.85rem">
+                                            ${Math.round(item.points).toLocaleString()} pts
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

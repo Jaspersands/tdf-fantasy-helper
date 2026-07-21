@@ -1,0 +1,574 @@
+/* Custom Premium Stylesheet for Fantasy TdF Helper */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-primary: #f8fafc; /* Slate 50 - clean light gray */
+    --bg-secondary: #ffffff; /* White background */
+    --bg-tertiary: #f1f5f9; /* Slate 100 */
+    --border-color: #cbd5e1; /* Slate 300 */
+    
+    --text-primary: #0f172a; /* Slate 900 - dark charcoal text */
+    --text-secondary: #64748b; /* Slate 500 */
+    
+    --color-accent: #d97706; /* Tour de France Yellow (readable on light) */
+    --color-primary: #d97706;
+    --color-success: #15803d;
+    --color-danger: #b91c1c;
+    --color-purple: #7c3aed;
+    
+    /* Value Tiers colors */
+    --excellent-bg: rgba(22, 163, 74, 0.1);
+    --excellent-text: #16a34a;
+    --excellent-border: rgba(22, 163, 74, 0.3);
+    
+    --great-bg: rgba(34, 197, 94, 0.08);
+    --great-text: #15803d;
+    --great-border: rgba(34, 197, 94, 0.2);
+
+    --good-bg: rgba(37, 99, 235, 0.1);
+    --good-text: #2563eb;
+    --good-border: rgba(37, 99, 235, 0.3);
+
+    --average-bg: rgba(217, 119, 6, 0.1);
+    --average-text: #d97706;
+    --average-border: rgba(217, 119, 6, 0.3);
+
+    --poor-bg: rgba(220, 38, 38, 0.1);
+    --poor-text: #dc2626;
+    --poor-border: rgba(220, 38, 38, 0.3);
+
+    /* Category Jersey colors */
+    --cat-leaders: #f59e0b;
+    --cat-sprinters: #15803d;
+    --cat-climbers: #ef4444;
+    --cat-all-rounders: #64748b;
+}
+
+body {
+    font-family: 'Outfit', 'IBM Plex Sans', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    letter-spacing: -0.01em;
+}
+
+main {
+    flex: 1;
+}
+
+/* Header & Navbar Custom styling */
+.navbar {
+    background-color: #ffdd00 !important; /* Bold TdF Yellow */
+    border-bottom: 3px solid #111111;
+    padding: 0.85rem 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-brand {
+    font-weight: 900;
+    font-size: 1.45rem;
+    letter-spacing: -0.04em;
+    color: #111111 !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+}
+
+.navbar-brand i {
+    color: #111111 !important;
+    -webkit-text-fill-color: #111111 !important;
+    margin-right: 0.5rem;
+}
+
+.nav-link {
+    font-weight: 700;
+    color: rgba(17, 17, 17, 0.7) !important;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: #111111 !important;
+}
+
+.nav-link.active {
+    font-weight: 800;
+    border-bottom: 3px solid #111111 !important;
+}
+
+/* Container limits */
+@media (min-width: 1200px) {
+    .container { max-width: 1400px; }
+}
+
+/* Premium Card designs */
+.card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    background-color: #f8fafc;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+/* Rider Card Premium styling */
+.rider-card {
+    border-left: 5px solid var(--color-primary);
+}
+
+.rider-card.category-leaders { border-left-color: var(--cat-leaders); }
+.rider-card.category-sprinters { border-left-color: var(--cat-sprinters); }
+.rider-card.category-climbers { border-left-color: var(--cat-climbers); }
+.rider-card.category-all-rounders { border-left-color: var(--cat-all-rounders); }
+
+.rider-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+/* Table Styling */
+.table {
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.table-responsive {
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.table th {
+    background-color: #111111 !important; /* Bold TdF Dark Header */
+    color: #ffffff !important;
+    font-weight: 700;
+    border-bottom: 3px solid #ffdd00 !important; /* Yellow border line */
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+}
+
+.table td {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 0.85rem 0.75rem;
+    vertical-align: middle;
+    font-size: 0.9rem;
+    transition: background-color 0.15s ease;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #f8fafc !important; /* Soft light gray stripe */
+    color: var(--text-primary) !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(even) > * {
+    background-color: #ffffff !important; /* White stripe */
+    color: var(--text-primary) !important;
+}
+
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover * {
+    background-color: #f1f5f9 !important; /* Soft hover highlight */
+    color: var(--text-primary) !important;
+}
+
+.rider-row td:first-child {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* Sortable table headers */
+.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sortable:hover {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-primary) !important;
+}
+
+.sortable i {
+    font-size: 0.75rem;
+    margin-left: 0.4rem;
+    opacity: 0.6;
+}
+
+.sortable:hover i {
+    opacity: 1;
+}
+
+/* Badge and Pill custom design */
+.badge {
+    padding: 0.35em 0.75em;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.category-badge-leaders {
+    background-color: #ffdd00;
+    color: #000000;
+    border: 1px solid #ffdd00;
+    font-weight: 700;
+}
+
+.category-badge-sprinters {
+    background-color: #15803d;
+    color: #ffffff;
+    border: 1px solid #166534;
+    font-weight: 700;
+}
+
+.category-badge-climbers {
+    background-color: #ffffff;
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    background-image: radial-gradient(#ef4444 20%, transparent 20%), radial-gradient(#ef4444 20%, transparent 20%);
+    background-size: 6px 6px;
+    background-position: 0 0, 3px 3px;
+    font-weight: 800;
+    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+}
+
+.category-badge-all-rounders {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #d4d4d4;
+    font-weight: 700;
+}
+
+/* Value classes */
+.value-excellent {
+    background-color: var(--excellent-bg);
+    color: var(--excellent-text);
+    border: 1px solid var(--excellent-border);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: inline-block;
+}
+
+.value-great {
+    background-color: var(--great-bg);
+    color: var(--great-text);
+    border: 1px solid var(--great-border);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: inline-block;
+}
+
+.value-good {
+    background-color: var(--good-bg);
+    color: var(--good-text);
+    border: 1px solid var(--good-border);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: inline-block;
+}
+
+.value-average {
+    background-color: var(--average-bg);
+    color: var(--average-text);
+    border: 1px solid var(--average-border);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: inline-block;
+}
+
+.value-poor {
+    background-color: var(--poor-bg);
+    color: var(--poor-text);
+    border: 1px solid var(--poor-border);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: inline-block;
+}
+
+/* Dropdown Custom Styles (Glassmorphism look) */
+.dropdown-menu {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07);
+    border-radius: 8px;
+}
+
+.dropdown-item {
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.dropdown-item:hover, .dropdown-item.active {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.custom-dropdown-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.custom-dropdown-btn:hover {
+    border-color: var(--color-primary);
+}
+
+.custom-dropdown-btn span {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: 0.5rem;
+}
+
+.custom-dropdown-btn .dropdown-arrow {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    transition: transform 0.2s ease;
+}
+
+.dropdown-menu .form-check {
+    padding: 0.5rem 1rem;
+    margin: 0;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    display: flex;
+    align-items: center;
+    color: var(--text-primary);
+}
+
+.dropdown-menu .form-check:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.dropdown-menu .form-check-input {
+    margin-right: 0.75rem;
+    cursor: pointer;
+}
+
+.dropdown-menu .form-check-label {
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* Compare sliding drawer panel */
+.compare-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 380px;
+    max-width: 90%;
+    z-index: 1050;
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    background-color: var(--bg-secondary);
+    border-radius: 12px;
+    overflow: hidden;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* Team builder squad display styling */
+.squad-member-card {
+    background: var(--bg-tertiary);
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.squad-member-card.filled {
+    background: var(--bg-secondary);
+    border-style: solid;
+}
+
+/* Chart customization wrapper */
+canvas {
+    max-width: 100%;
+}
+
+/* Footer styling */
+footer {
+    background-color: var(--bg-secondary) !important;
+    border-top: 1px solid var(--border-color);
+    padding: 1.5rem 0;
+}
+
+footer a {
+    text-decoration: none;
+    font-weight: 500;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* General Layout Tweaks */
+.gap-3 {
+    gap: 1rem !important;
+}
+
+.text-warning {
+    color: var(--color-accent) !important;
+}
+
+.bg-primary {
+    background-color: var(--color-primary) !important;
+}
+
+.bg-success {
+    background-color: var(--color-success) !important;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #ffffff !important;
+}
+
+.btn-primary:hover {
+    background-color: #b45309;
+    border-color: #b45309;
+    color: #ffffff !important;
+}
+
+.btn-outline-primary {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #ffffff !important;
+}
+
+.btn-outline-secondary {
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Override hardcoded dark elements from HTML template to match light TdF theme */
+input.bg-dark,
+select.bg-dark,
+textarea.bg-dark,
+input.bg-dark:focus,
+select.bg-dark:focus {
+    background-color: #ffffff !important;
+    color: #111111 !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+}
+
+input.bg-dark::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Card overrides */
+.card.bg-dark {
+    background-color: #ffffff !important;
+    color: #111111 !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Inner block row overrides (e.g. in index.html card views) */
+.bg-dark.rounded.p-2.small {
+    background-color: #f1f5f9 !important; /* Lighter background for inner metric boxes */
+    color: #111111 !important;
+}
+
+.bg-dark.rounded.p-2.small * {
+    color: #111111 !important;
+}
+
+/* Card Header overrides to be bold black with yellow accent */
+.card-header.bg-dark.text-white {
+    background-color: #111111 !important;
+    color: #ffffff !important;
+    border-bottom: 3px solid #ffdd00 !important;
+}
+
+/* Footer override for light theme */
+footer.bg-dark {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-top: 1px solid var(--border-color) !important;
+}
+
+footer.bg-dark a.text-warning {
+    color: var(--color-accent) !important;
+}

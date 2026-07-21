@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Riders - Fantasy TdF Helper</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-bicycle"></i> Fantasy TdF Helper
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Race Selector -->
+                <ul class="navbar-nav me-3">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="raceDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-flag-checkered"></i>
+                            <span class="text-warning">Loading Race...</span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="raceDropdown">
+                            <li><a class="dropdown-item race-option" data-race="tdf" href="#">🇫🇷 Tour de France 2026</a></li>
+                            <li><a class="dropdown-item race-option" data-race="tdf2025" href="#">🇫🇷 Tour de France 2025</a></li>
+                            <li><a class="dropdown-item race-option" data-race="vuelta" href="#">🇪🇸 Vuelta 2025</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-users"></i> Riders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="compare.html">
+                            <i class="fas fa-balance-scale"></i> Compare
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="team-builder.html">
+                            <i class="fas fa-users-cog"></i> Team Builder
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="stats.html">
+                            <i class="fas fa-chart-bar"></i> Statistics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="optimizer.html">
+                            <i class="fas fa-magic"></i> Optimizer
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-balance-scale"></i> Compare Riders</h2>
+            <a href="index.html" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Back to Riders
+            </a>
+        </div>
+
+        <!-- No Riders State -->
+        <div id="noRidersState" class="text-center py-5 card mb-4" style="display: none;">
+            <div class="card-body">
+                <i class="fas fa-balance-scale fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No Riders Selected</h4>
+                <p class="text-muted">Select riders from the main list to compare them side by side.</p>
+                <a href="index.html" class="btn btn-primary">
+                    <i class="fas fa-users"></i> Browse Riders
+                </a>
+            </div>
+        </div>
+
+        <!-- Comparison Dashboard -->
+        <div id="comparisonDashboard" style="display: none;">
+            <!-- Comparison Table Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-table"></i> Rider Comparison 
+                        <span class="badge bg-primary" id="compareBadgeCount">0 riders</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr id="tableHeaders">
+                                    <th>Metric</th>
+                                    <!-- Dynamic headers will load here -->
+                                </tr>
+                            </thead>
+                            <tbody id="comparisonTableBody">
+                                <!-- Dynamic rows will load here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Cards Row -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mb-4" id="individualCompareCards">
+                <!-- Dynamic cards will load here -->
+            </div>
+        </div>
+
+        <!-- Add More Riders Card -->
+        <div class="card mt-4" id="addRiderCard">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-plus"></i> Add More Riders</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-8">
+                        <select id="riderSelectDropdown" class="form-select bg-dark text-white border-secondary">
+                            <option value="">Select a rider to add...</option>
+                            <!-- Dynamically populated options -->
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-primary w-100" onclick="addSelectedRider()">
+                            <i class="fas fa-plus-circle"></i> Add to Comparison
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">
+                Data from <a href="https://www.procyclingstats.com" target="_blank" class="text-warning">ProCyclingStats</a>
+                | Fantasy from <a href="https://fantasybytissot.letour.fr" target="_blank" class="text-warning">Tour de France Fantasy</a>
+                | © Marek Šulik
+            </p>
+            <small class="text-muted" id="lastUpdatedDate">
+                Last data update: July 2026
+            </small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap & App Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+        let comparedRiders = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize APP state
+            await initApp();
+
+            // Load compared riders from url params or localStorage
+            loadComparedRiders();
+
+            // Setup select dropdown list
+            populateRiderSelectDropdown();
+
+            // Render comparison UI
+            renderComparison();
+        });
+
+        // Parse query params and localstorage to load riders list
+        function loadComparedRiders() {
+            let names = getQueryParamArray('riders');
+            
+            // Fallback to localStorage if no parameters are in URL
+            if (names.length === 0) {
+                names = CompareManager.get();
+            } else {
+                // If loaded from URL, sync it into localstorage too
+                CompareManager.save(names);
+            }
+
+            // Look up full rider objects
+            comparedRiders = names
+                .map(name => APP_STATE.riders.find(r => r.name === name))
+                .filter(r => r !== undefined);
+        }
+
+        // Fill select box options excluding already compared riders
+        function populateRiderSelectDropdown() {
+            const select = document.getElementById('riderSelectDropdown');
+            if (!select) return;
+
+            // Sort riders by name
+            const availableRiders = APP_STATE.riders
+                .filter(r => !comparedRiders.some(cr => cr.name === r.name))
+                .sort((a, b) => a.name.localeCompare(b.name));
+
+            select.innerHTML = '<option value="">Select a rider to add...</option>' + 
+                availableRiders.map(r => `
+                    <option value="${r.name}">${r.name} (${r.team}) - ${r.price} credits</option>
+                `).join('');
+        }
+
+        // Add selected dropdown rider to comparison
+        function addSelectedRider() {
+            const select = document.getElementById('riderSelectDropdown');
+            const name = select.value;
+            if (!name) return;
+
+            if (comparedRiders.length >= 5) {
+                alert("You can compare up to 5 riders at once.");
+                return;
+            }
+
+            const rider = APP_STATE.riders.find(r => r.name === name);
+            if (rider) {
+                comparedRiders.push(rider);
+                
+                // Sync comparison state
+                const names = comparedRiders.map(r => r.name);
+                CompareManager.save(names);
+                
+                // Update URL parameter without reload
+                updateUrlParams(names);
+                
+                // Re-render
+                populateRiderSelectDropdown();
+                renderComparison();
+                select.value = "";
+            }
+        }
+
+        // Remove rider from comparison
+        function removeRider(name) {
+            comparedRiders = comparedRiders.filter(r => r.name !== name);
+            const names = comparedRiders.map(r => r.name);
+            CompareManager.save(names);
+            updateUrlParams(names);
+            populateRiderSelectDropdown();
+            renderComparison();
+        }
+
+        // Update URL query parameters
+        function updateUrlParams(names) {
+            const params = new URLSearchParams();
+            params.set('race', APP_STATE.currentRace);
+            names.forEach(name => params.append('riders', name));
+            
+            const newUrl = `${window.location.pathname}?${params.toString()}`;
+            window.history.pushState({ path: newUrl }, '', newUrl);
+            
+            // Sync nav links again to include updated query
+            syncNavbarLinks();
+        }
+
+        // Render dashboard or empty placeholder
+        function renderComparison() {
+            const noRiders = document.getElementById('noRidersState');
+            const dashboard = document.getElementById('comparisonDashboard');
+            const addCard = document.getElementById('addRiderCard');
+
+            if (comparedRiders.length === 0) {
+                noRiders.style.display = 'block';
+                dashboard.style.display = 'none';
+                return;
+            }
+
+            noRiders.style.display = 'none';
+            dashboard.style.display = 'block';
+
+            document.getElementById('compareBadgeCount').textContent = `${comparedRiders.length} rider${comparedRiders.length > 1 ? 's' : ''}`;
+
+            renderTableHeaders();
+            renderTableBody();
+            renderRiderCards();
+        }
+
+        // Render headers for comparison table
+        function renderTableHeaders() {
+            const headerRow = document.getElementById('tableHeaders');
+            headerRow.innerHTML = '<th>Metric</th>' + comparedRiders.map(r => `
+                <th class="text-center text-truncate" style="max-width:180px">${r.flag} ${r.name}</th>
+            `).join('');
+        }
+
+        // Render metrics table body
+        function renderTableBody() {
+            const tbody = document.getElementById('comparisonTableBody');
+            
+            const metrics = [
+                { label: 'Team', key: 'team' },
+                { label: 'Category', key: 'category', isBadge: true, badgeFn: getCategoryBadgeClass },
+                { label: 'Price', key: 'price', suffix: '⭐', isPill: true },
+                { label: 'PCS Points (season)', key: 'pcs_points_season', isNumber: true },
+                { label: 'PCS Points (12-month)', key: 'pcs_points_12m', isNumber: true },
+                { label: 'Wins (season)', key: 'wins' },
+                { label: 'Value / credit', key: 'value_credit', isValPill: true },
+                { label: 'Value tier', key: 'value_tier', isValBadge: true },
+                { label: 'PCS Rank', key: 'pcs_rank', prefix: '#' },
+                { label: 'Nationality', key: 'nationality' }
+            ];
+
+            tbody.innerHTML = metrics.map(metric => {
+                let cellsHtml = `<td><strong>${metric.label}</strong></td>`;
+                
+                cellsHtml += comparedRiders.map(r => {
+                    let val = r[metric.key];
+                    
+                    if (metric.isNumber) {
+                        val = Math.round(val).toLocaleString();
+                    } else if (metric.prefix && val <= 100) {
+                        val = `${metric.prefix}${val}`;
+                    } else if (metric.prefix && val > 100) {
+                        val = 'Rank > 100';
+                    }
+                    
+                    if (metric.suffix) {
+                        val = `${val}${metric.suffix}`;
+                    }
+
+                    if (metric.isBadge) {
+                        return `<td class="text-center"><span class="badge ${metric.badgeFn(val)}">${val}</span></td>`;
+                    } else if (metric.isPill) {
+                        return `<td class="text-center"><span class="badge bg-light text-dark fw-bold">${val}</span></td>`;
+                    } else if (metric.isValPill) {
+                        return `<td class="text-center"><span class="${getValueColorClass(r.value_tier)}">${val.toFixed(1)}</span></td>`;
+                    } else if (metric.isValBadge) {
+                        return `<td class="text-center"><span class="badge ${getValueColorClass(val)}">${val}</span></td>`;
+                    }
+                    
+                    return `<td class="text-center">${val}</td>`;
+                }).join('');
+                
+                return `<tr>${cellsHtml}</tr>`;
+            }).join('');
+        }
+
+        // Render list of individual cards underneath
+        function renderRiderCards() {
+            const container = document.getElementById('individualCompareCards');
+            
+            container.innerHTML = comparedRiders.map(rider => `
+                <div class="col">
+                    <div class="card h-100 rider-card category-${rider.category.toLowerCase()}">
+                        <div class="card-header d-flex justify-content-between align-items-center py-2">
+                            <h6 class="mb-0 text-truncate">${rider.name}</h6>
+                            <span class="badge bg-secondary">${rider.price} cr</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-secondary small mb-2">
+                                <i class="fas fa-flag"></i> ${rider.flag} ${rider.nationality} | 
+                                <i class="fas fa-users"></i> ${rider.team}
+                            </p>
+                            
+                            <div class="row text-center mb-3">
+                                <div class="col-6">
+                                    <div class="fw-bold">${Math.round(rider.pcs_points_season).toLocaleString()}</div>
+                                    <div class="text-muted small">PCS Points</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="fw-bold text-success">${rider.value_credit.toFixed(1)}</div>
+                                    <div class="text-muted small">P/C Ratio</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3 d-flex flex-wrap gap-1">
+                                <span class="badge ${getCategoryBadgeClass(rider.category)}">${rider.category}</span>
+                                <span class="badge ${getValueColorClass(rider.value_tier)}">${rider.value_tier}</span>
+                                <span class="badge bg-dark text-white">#${rider.pcs_rank} PCS</span>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                ${rider.pcs_link ? `<a href="${rider.pcs_link}" target="_blank" class="btn btn-outline-secondary btn-sm"><i class="fas fa-external-link-alt"></i> View on PCS</a>` : ''}
+                                <button class="btn btn-outline-danger btn-sm" onclick="removeRider('${rider.name.replace(/'/g, "\\'")}')">
+                                    <i class="fas fa-times"></i> Remove comparison
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getValueColorClass(tier) {
+            const classes = {
+                'Excellent': 'value-excellent',
+                'Great': 'value-great',
+                'Good': 'value-good',
+                'Average': 'value-average',
+                'Poor': 'value-poor'
+            };
+            return classes[tier] || 'value-unknown';
+        }
+    </script>
+</body>
+</html>
