@@ -432,6 +432,7 @@
             const squadCost = document.getElementById('squadCost');
             const squadPoints = document.getElementById('squadPoints');
             
+            const rules = getRaceRules();
             squadCount.textContent = localSquad.length;
             
             if (localSquad.length === 0) {
@@ -442,7 +443,7 @@
                         <small class="text-secondary">Search above or click "Sync"</small>
                     </div>
                 `;
-                squadCost.textContent = "0 / 120";
+                squadCost.textContent = `0 / ${rules.maxBudget}`;
                 squadPoints.textContent = "0 pts";
                 return;
             }
@@ -451,10 +452,10 @@
             const totalCost = localSquad.reduce((sum, r) => sum + r.price, 0);
             const totalPoints = localSquad.reduce((sum, r) => sum + getEffectivePoints(r), 0);
             
-            squadCost.textContent = `${totalCost} / 120`;
+            squadCost.textContent = `${totalCost} / ${rules.maxBudget}`;
             squadPoints.textContent = `${Math.round(totalPoints).toLocaleString()} pts`;
             
-            if (totalCost > 120) {
+            if (totalCost > rules.maxBudget) {
                 squadCost.className = "font-monospace fw-bold text-danger";
             } else {
                 squadCost.className = "font-monospace fw-bold text-dark";
@@ -692,8 +693,8 @@
             // Sort pool in descending order of effective points
             pool.sort((a, b) => getEffectivePoints(b) - getEffectivePoints(a));
             
-            // Limit pool size to keep solver extremely fast (top 60 points earners)
-            const POOL_SIZE = 60;
+            // Limit pool size to keep solver extremely fast
+            const POOL_SIZE = rules.maxRiders === 7 ? 28 : 45;
             if (pool.length > POOL_SIZE) {
                 pool = pool.slice(0, POOL_SIZE);
             }
