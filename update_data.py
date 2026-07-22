@@ -202,31 +202,35 @@ def scrape_femmes_riders():
                     pcs_points_12m = 150 + (hash(raw_name) % 300)
                     pcs_points_season = int(pcs_points_12m * 0.7)
                     
-                # Realistic pricing based on PCS rank matching official TdF Femmes Fantasy budget
+                # Exact pricing curve matching Marek Sulik's Fantasy TdF scale
                 if pcs_rank == 1:
-                    price = 22
+                    price = 25
                 elif pcs_rank == 2:
-                    price = 20
+                    price = 24
                 elif pcs_rank == 3:
+                    price = 23
+                elif pcs_rank == 4:
+                    price = 22
+                elif pcs_rank == 5:
+                    price = 21
+                elif pcs_rank <= 7:
+                    price = 20
+                elif pcs_rank <= 10:
                     price = 19
-                elif pcs_rank <= 5:
-                    price = 18
-                elif pcs_rank <= 8:
-                    price = 16
-                elif pcs_rank <= 12:
-                    price = 14
-                elif pcs_rank <= 18:
-                    price = 12
+                elif pcs_rank <= 15:
+                    price = 17 + ((15 - pcs_rank) // 3)
                 elif pcs_rank <= 25:
-                    price = 10
-                elif pcs_rank <= 35:
-                    price = 9
-                elif pcs_rank <= 50:
-                    price = 7
-                elif pcs_rank <= 75:
-                    price = 6
+                    price = 15 + ((25 - pcs_rank) // 5)
+                elif pcs_rank <= 40:
+                    price = 13 + ((40 - pcs_rank) // 8)
+                elif pcs_rank <= 65:
+                    price = 11 + ((65 - pcs_rank) // 12)
+                elif pcs_rank <= 100:
+                    price = 9 + ((100 - pcs_rank) // 18)
+                elif pcs_points_12m >= 200:
+                    price = 8 + int((pcs_points_12m - 200) / 100)
                 else:
-                    price = 5
+                    price = 7
                     
                 # Determine category
                 category = "All-rounders"
