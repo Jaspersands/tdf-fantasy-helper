@@ -13,12 +13,29 @@ class AutoUpdateHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
 
     def do_GET(self):
-        # Trigger update when accessing entry pages
         path = self.path.split('?')[0]
+        if path == '/api/crawl':
+            self.trigger_force_update()
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(b'{"status":"crawling_started"}')
+            return
+
+        # Trigger update when accessing entry pages
         if path in ['', '/', '/index.html', '/optimizer.html', '/team-builder.html']:
             self.trigger_background_update()
             
         return super().do_GET()
+
+    def trigger_force_update(self):
+        if not hasattr(self.__class__, '_updating') or not self.__class__._updating:
+            self.__class__._updating = True
+            print("Forced dataset crawl requested from UI button. Starting scraper...")
+            thread = threading.Thread(target=self.run_scraper)
+            thread.daemon = True
+            thread.start()
 
     def trigger_background_update(self):
         db_path = os.path.join(DIRECTORY, "riders_data.json")

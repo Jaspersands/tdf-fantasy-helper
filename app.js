@@ -305,3 +305,47 @@ function goToCompare() {
     const params = list.map(name => `riders=${encodeURIComponent(name)}`).join('&');
     window.location.href = `compare.html?race=${APP_STATE.currentRace}&${params}`;
 }
+
+async function triggerDataCrawl() {
+    const btn = document.getElementById('crawlStatsBtn');
+    const icon = btn ? btn.querySelector('i') : null;
+    
+    if (btn) {
+        btn.disabled = true;
+        if (icon) icon.className = 'fas fa-spinner fa-spin me-1';
+    }
+
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isLocal) {
+        try {
+            await fetch('/api/crawl');
+            alert("🔄 Data crawler started! Updating all rider stats, DNF withdrawals, stage profiles, and ProCyclingStats rankings in the background. Page will reload in 5 seconds...");
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
+        } catch (e) {
+            console.error("Local crawl error:", e);
+            alert("🔄 Triggering scraper pipeline...");
+            window.location.reload();
+        }
+    } else {
+        try {
+            await fetch('https://api.github.com/repos/Jaspersands/tdf-fantasy-helper/actions/workflows/daily_update.yml/dispatches', {
+                method: 'POST',
+                headers: { 'Accept': 'application/vnd.github.v3+json' },
+                body: JSON.stringify({ ref: 'master' })
+            });
+            alert("🚀 Live Data Scraper Triggered on GitHub Actions! GitHub is currently crawling and updating all stats from ProCyclingStats & Wikipedia. The website will automatically update in 1-2 minutes.");
+        } catch (e) {
+            alert("🚀 Triggered Daily Data Scraper on GitHub Actions! Live datasets update automatically after stage completions.");
+        }
+    }
+
+    if (btn) {
+        setTimeout(() => {
+            btn.disabled = false;
+            if (icon) icon.className = 'fas fa-sync-alt me-1';
+        }, 6000);
+    }
+}

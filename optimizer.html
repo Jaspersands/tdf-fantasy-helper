@@ -19,8 +19,8 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- Race Selector -->
-                <ul class="navbar-nav me-3">
+                <!-- Race Selector & Crawl Button -->
+                <ul class="navbar-nav me-3 align-items-center">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="raceDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-flag-checkered"></i>
@@ -32,6 +32,11 @@
                             <li><a class="dropdown-item race-option" data-race="vuelta" href="#">🇪🇸 Vuelta 2025</a></li>
                             <li><a class="dropdown-item race-option" data-race="tdffemmes" href="#">🇫🇷👧 Tour de France Femmes</a></li>
                         </ul>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <button id="crawlStatsBtn" class="btn btn-sm btn-outline-warning fw-bold" onclick="triggerDataCrawl()" title="Crawl & update latest rider stats from ProCyclingStats & Wikipedia">
+                            <i class="fas fa-sync-alt me-1"></i> Refresh Data
+                        </button>
                     </li>
                 </ul>
                 
