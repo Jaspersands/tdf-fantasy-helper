@@ -8,7 +8,7 @@
     },
     {
       "stage": "2",
-      "course": "Tarragona(Spain) toBarcelona(Spain)",
+      "course": "Tarragona(Spain) to Barcelona (Spain)",
       "distance": "168.5km (104.7mi)",
       "type": "Hilly stage"
     },
@@ -32,7 +32,7 @@
     },
     {
       "stage": "6",
-      "course": "PautoGavarnie-Gèdre",
+      "course": "Pau toGavarnie-Gèdre",
       "distance": "186.2km (115.7mi)",
       "type": "Mountain stage"
     },
@@ -57,7 +57,7 @@
     {
       "stage": "10",
       "course": "AurillactoLe Lioran",
-      "distance": "166.6km (103.5mi)",
+      "distance": "165.6km (102.9mi)",
       "type": "Mountain stage"
     },
     {
@@ -80,7 +80,7 @@
     },
     {
       "stage": "14",
-      "course": "MulhousetoLe MarksteinFellering",
+      "course": "MulhousetoLe Markstein",
       "distance": "155.3km (96.5mi)",
       "type": "Mountain stage"
     },
@@ -104,7 +104,7 @@
     },
     {
       "stage": "18",
-      "course": "VoirontoOrcières-Merlette",
+      "course": "Voiron toOrcières-Merlette",
       "distance": "185.2km (115.1mi)",
       "type": "Mountain stage"
     },
@@ -116,14 +116,14 @@
     },
     {
       "stage": "20",
-      "course": "Le Bourg-d'OisanstoAlpe d'Huez",
+      "course": "Le Bourg-d'Oisansto Alpe d'Huez",
       "distance": "170.9km (106.2mi)",
       "type": "Mountain stage"
     },
     {
       "stage": "21",
-      "course": "ThoirytoParis(Champs-Élysées)",
-      "distance": "89km (55mi)",
+      "course": "Paristo Paris (Champs-Élysées)",
+      "distance": "88.7km (55.1mi)",
       "type": "Flat stage"
     }
   ],
